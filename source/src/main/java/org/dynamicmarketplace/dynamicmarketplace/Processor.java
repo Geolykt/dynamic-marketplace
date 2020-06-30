@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.*;
 
 public class Processor {
@@ -24,9 +25,10 @@ public class Processor {
     public String getHeldItem ( Player player ) {
         return player.getInventory().getItemInMainHand().getType().toString().toLowerCase() ;
     }
+    
     public boolean canSell ( ItemStack item, boolean silent ){
-        if ( item.getEnchantments().isEmpty() &&  item.getDurability() == 0 ) return true;
-        return false;
+        boolean damaged = item.getItemMeta() instanceof Damageable && ((Damageable) item.getItemMeta()).hasDamage();
+        return item.getEnchantments().isEmpty() && !damaged;
     }
     public int getHandQuantity ( Player player ){
         return player.getInventory().getItemInMainHand().getAmount();
