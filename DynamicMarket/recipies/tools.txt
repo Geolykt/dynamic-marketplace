@@ -46,7 +46,6 @@ diamond_leggings: diamond 6
 diamond_pickaxe: diamond 3, stick 2
 diamond_shovel: diamond 1, stick 2
 diamond_sword: diamond 2, stick 1
-diamond_ore: diamond 1.5
 
 leather_boots: leather 4
 leather_chestplate: leather 8

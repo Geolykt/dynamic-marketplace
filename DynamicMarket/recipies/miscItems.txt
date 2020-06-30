@@ -47,13 +47,9 @@ beacon: obsidian 3, nether_star 1, glass 5
 conduit: nautilus_shell 8, heart_of_the_sea 1 
 
 emerald_block: emerald 9
-emerald_ore: emerald 2
 
 coal_block: coal 9
-coal_ore: coal 4
 
 lapis_block: lapis_lazuli 9
-lapis_ore: lapis_lazuli 8
 
-nether_quartz_ore: quartz 4
 quartz_block: quartz 4

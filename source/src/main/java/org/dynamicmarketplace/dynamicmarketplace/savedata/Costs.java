@@ -1,6 +1,8 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /* ==================================================================
     Cost Save Data
@@ -49,5 +51,13 @@ public class Costs{
             costFiles[s].save();
     }
 
+    // get all item names, for tab completion
+    public Set<String> getItemNames() {
+        Set<String> names = new HashSet<String>();
 
+        for(SingleCostFile costFile : costFiles) {
+            names.addAll(costFile.getItemNames());
+        }
+        return names;
+    }
 }

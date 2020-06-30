@@ -1,6 +1,8 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /* ==================================================================
     Recipie Save Data
@@ -34,6 +36,13 @@ public class Recipies{
         return null;
     }
 
+    // get all recipe names, for tab completion
+    public Set<String> getItemNames() {
+        Set<String> names = new HashSet<String>();
 
-
+        for(SingleRecipieFile recipeFile : recipieFiles) {
+            names.addAll(recipeFile.getItemNames());
+        }
+        return names;
+    }
 }

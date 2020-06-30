@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.text.DecimalFormat;
 
 public class SingleCostFile {
@@ -63,5 +64,11 @@ public class SingleCostFile {
                 myWriter.write(entry.getKey() + ": " + df.format(entry.getValue()*100000)+ "\n");
             myWriter.close();
         } catch (IOException e) {}
+    }
+
+    // get all valid item names (used for tab completion)
+
+    public Set<String> getItemNames() {
+        return costs.keySet();
     }
 }

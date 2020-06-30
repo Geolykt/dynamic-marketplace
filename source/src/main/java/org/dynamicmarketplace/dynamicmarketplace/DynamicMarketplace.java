@@ -3,6 +3,8 @@ package org.dynamicmarketplace.dynamicmarketplace;
 import net.milkbowl.vault.economy.Economy;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -10,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.commands.Worth;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.*;
 
 public final class DynamicMarketplace extends JavaPlugin {
@@ -24,7 +27,7 @@ public final class DynamicMarketplace extends JavaPlugin {
     private Recipies recipies;
 
     // Init
-
+    @Override
     public void onEnable() {
         
         // Ecconomy
@@ -39,6 +42,14 @@ public final class DynamicMarketplace extends JavaPlugin {
         inputParser = new InputParser();
         processor = new Processor(recipies, costs, config);
 
+        // setup worth command
+        Set<String> itemNames = new HashSet<String>();
+        itemNames.addAll(costs.getItemNames());
+        itemNames.addAll(recipies.getItemNames());
+        Worth worthCmd = new Worth(itemNames);
+
+        getCommand("worth").setExecutor(worthCmd);
+        getCommand("worth").setTabCompleter(worthCmd);
     }
 
     private void setupEconomy () {
@@ -51,7 +62,7 @@ public final class DynamicMarketplace extends JavaPlugin {
     }
 
     // Commands
-
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if ( ! (sender instanceof Player) ) return true;
 

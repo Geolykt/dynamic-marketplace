@@ -1,6 +1,5 @@
 
 redstone_block: redstone 9 
-redstone_ore: redstone 5
 
 redstone_lamp: redstone 4, glowstone_dust 1
 redstone_torch: redstone 1, stick 1

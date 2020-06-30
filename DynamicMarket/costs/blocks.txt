@@ -17,3 +17,10 @@ clay_ball: 10
 gravel: 5
 
 ice: 40
+
+emerald_ore: 100
+coal_ore: 40
+lapis_ore: 100
+nether_quartz_ore: 30
+redstone_ore: 50
+diamond_ore: 1500
