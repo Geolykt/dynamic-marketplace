@@ -1,5 +1,6 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,13 +17,13 @@ public class Recipies{
     
     // Initalization
 
-    public Recipies ( ArrayList<String> filePaths ) {
+    public Recipies (ArrayList<String> filePaths) throws FileNotFoundException {
 
         int recipieFileCount = filePaths.size();
         recipieFiles = new SingleRecipieFile[recipieFileCount];
         
-        for ( int i=0; i < recipieFileCount; i ++ ){
-            recipieFiles[i] = new SingleRecipieFile( filePaths.get(i) );
+        for (int i=0; i < recipieFileCount; i++ ){
+            recipieFiles[i] = new SingleRecipieFile(filePaths.get(i));
         }
 
     }

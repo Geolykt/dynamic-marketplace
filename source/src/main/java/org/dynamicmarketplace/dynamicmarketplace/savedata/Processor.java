@@ -27,19 +27,13 @@ public class Processor {
 
     // Load in a file as a List of lines
 
-    public static ArrayList<String> loadFile ( File f) {
-
-        Scanner scanner = null;
-        try { scanner = new Scanner( f ); }
-        catch (FileNotFoundException e) {}
-
+    public static ArrayList<String> loadFile (File f) throws FileNotFoundException {
         ArrayList<String> lines = new ArrayList<String> ();
-    
-        while (scanner.hasNextLine()) 
-            lines.add(scanner.nextLine().trim());
-
+        try (Scanner scanner = new Scanner(f)) {
+            while (scanner.hasNextLine()) 
+                lines.add(scanner.nextLine().trim());
+        }
         return lines;
-
     }
 
     public static void loadError ( String line ) {

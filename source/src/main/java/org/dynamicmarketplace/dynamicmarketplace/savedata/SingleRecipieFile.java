@@ -1,6 +1,7 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -12,7 +13,7 @@ public class SingleRecipieFile {
 
     // Init
 
-    public SingleRecipieFile(String filePath) {
+    public SingleRecipieFile(String filePath) throws FileNotFoundException {
         file = Processor.verifyFile(filePath);
         recipies = new HashMap<String, Recipie>();
         System.out.println("[DynaMark] Loading recipie file " + filePath);
@@ -21,7 +22,7 @@ public class SingleRecipieFile {
 
     // Load data
 
-    public void load() {
+    public void load() throws FileNotFoundException {
         ArrayList<String> lines = Processor.loadFile(file);
         for (String line : lines) {
 

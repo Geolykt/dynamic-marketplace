@@ -1,6 +1,7 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class SingleCostFile {
 
     // Init
 
-    public SingleCostFile(String filePath) {
+    public SingleCostFile(String filePath) throws FileNotFoundException {
         file = Processor.verifyFile(filePath);
         costs = new HashMap<String, Double>();
         System.out.println("[DynaMark] Loading cost file " + filePath);
@@ -23,8 +24,7 @@ public class SingleCostFile {
     }
 
     // Load data
-
-    public void load() {
+    public void load() throws FileNotFoundException {
         ArrayList<String> lines = Processor.loadFile(file);
         for (String line : lines) {
 

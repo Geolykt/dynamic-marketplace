@@ -1,5 +1,6 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class Costs{
     
     // Initalization
 
-    public Costs ( ArrayList<String> filePaths ) {
+    public Costs ( ArrayList<String> filePaths ) throws FileNotFoundException {
 
         int costFileCount = filePaths.size();
         costFiles = new SingleCostFile[costFileCount];

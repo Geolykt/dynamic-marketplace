@@ -2,6 +2,7 @@ package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
 import org.dynamicmarketplace.dynamicmarketplace.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,13 +24,9 @@ public class Config{
     private File file;
     
     // Initalization
-
-    public Config ( String filePath ) {
-
-        file = Processor.verifyFile(filePath);
+    public Config ( String filePath ) throws FileNotFoundException {
         reset();
         load();
-
     }
 
     public void reset () {
@@ -42,7 +39,7 @@ public class Config{
 
     // Load data 
 
-    public void load () {
+    public void load () throws FileNotFoundException {
         ArrayList<String> lines = Processor.loadFile( file );
         
         for ( String line : lines ) {

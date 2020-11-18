@@ -2,9 +2,15 @@ package org.dynamicmarketplace.dynamicmarketplace;
 
 import net.milkbowl.vault.economy.Economy;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -26,6 +32,29 @@ public final class DynamicMarketplace extends JavaPlugin {
     private Costs costs;
     private Recipies recipies;
 
+    /**
+     * Saves an directory within the plugin jar to the data folder.
+     *  Source: 
+     *https://github.com/2008Choco/DragonEggDrop/blob/master/src/main/java/wtf/choco/dragoneggdrop/DragonEggDrop.java#L249-L266
+     * @param directory The directory to save
+     * @author 2008Choco
+     */
+    private void saveDefaultDirectory(String directory) {
+        try (JarFile jar = new JarFile(getFile())) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (!name.startsWith(directory + "/") || entry.isDirectory()) {
+                    continue;
+                }
+                this.saveResource(name, false);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Init
     @Override
     public void onEnable() {
@@ -33,10 +62,23 @@ public final class DynamicMarketplace extends JavaPlugin {
         // Ecconomy
         setupEconomy();
 
+        //Setup resources
+        if (!new File(getDataFolder(), "CONFIG.txt").exists()) {
+            saveResource("CONFIG.txt", false);
+            saveDefaultDirectory("costs");
+            saveDefaultDirectory("recipies");
+        }
+
         // Save Data
-        config = new Config("plugins/DynamicMarket/CONFIG.txt");
-        costs = new Costs(config.costFiles);
-        recipies = new Recipies(config.recipieFiles);
+        try {
+            config = new Config("plugins/DynamicMarket/CONFIG.txt");
+            costs = new Costs(config.costFiles);
+            recipies = new Recipies(config.recipieFiles);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Commands
         inputParser = new InputParser();
@@ -46,7 +88,7 @@ public final class DynamicMarketplace extends JavaPlugin {
         Set<String> itemNames = new HashSet<String>();
         itemNames.addAll(costs.getItemNames());
         itemNames.addAll(recipies.getItemNames());
-        Worth worthCmd = new Worth(itemNames);
+        Worth worthCmd = new Worth(processor, economy, itemNames);
 
         getCommand("worth").setExecutor(worthCmd);
         getCommand("worth").setTabCompleter(worthCmd);
@@ -70,15 +112,13 @@ public final class DynamicMarketplace extends JavaPlugin {
         int count = 0;
 
         switch ( command.getName().toLowerCase() ){
-
             // Item Info
-
             case "infohand":
-                return getInfoOnHand( player );
+                return getInfoOnHand(player);
             case "iteminfo":
                 if ( args.length == 0 ) 
-                    return getInfoOnHand( player );
-                return getInfoOnItem( player, args[0] );
+                    return getInfoOnHand(player);
+                return getInfoOnItem(player, args[0] );
             case "cost":
                 if ( args.length == 0 ) 
                     return false;
@@ -86,10 +126,7 @@ public final class DynamicMarketplace extends JavaPlugin {
                     return doCostings(player, args[0], 1) ;
                 count = inputParser.castInt(args[1], player);
                 return doCostings(player, args[0], count) ;
-
-
             // Purchasing Items
-            
             case "buy":
                 if ( args.length == 0 ) 
                     return false;
@@ -97,21 +134,17 @@ public final class DynamicMarketplace extends JavaPlugin {
                     return purchaseItem(args[0], 1, player);
                 count = inputParser.castInt(args[1], player);
                 return count < 1 ? true : purchaseItem(args[0], count, player);
-
             case "buyhand":
                 if ( args.length == 0 ) 
-                    return purchaseHand( 1, player);
+                    return purchaseHand(1, player);
                 count = inputParser.castInt(args[0], player);
                 return count < 1 ? true : purchaseHand( count, player);
-
             // Sell Items
-
             case "sellhand":
                 if ( args.length == 0 ) 
                     return sellHand( processor.getHandQuantity(player), player);
                 count = inputParser.castInt(args[0], player);
                 return count < 1 ? true : sellHand( count, player);
-            
             case "sell":
                 if ( args.length == 0 ) 
                     return false;
@@ -119,15 +152,11 @@ public final class DynamicMarketplace extends JavaPlugin {
                     return sellItem(args[0], 1, player);
                 count = inputParser.castInt(args[1], player);
                 return count < 1 ? true : sellItem( args[0], count, player);
-
             case "sellall":
                 return sellAll(player);
-
         }
         return true;
     }
-
-    // Item Info
 
     private boolean getInfoOnHand ( Player player ) {
         String item = processor.getHeldItem(player);
@@ -135,6 +164,7 @@ public final class DynamicMarketplace extends JavaPlugin {
         if ( !valid ) return true;
         return getInfoOnItem( player, item );
     }
+
     private boolean getInfoOnItem ( Player player, String item ) {
         Boolean valid = processor.isValidItem(player, item);
         if ( !valid ) return true;
@@ -156,15 +186,13 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    // Purchasing Items
-
     private boolean purchaseHand ( int quantity, Player player) {
         String item = processor.getHeldItem(player);
         Boolean valid = processor.isValidItem(player, item);
         if ( !valid ) return true;
         return purchaseItem(item, quantity, player);
     }
-    
+
     private boolean purchaseItem ( String item, int quantity, Player player ) {
         Boolean valid = processor.isValidItem(player, item);
         if ( !valid ) return true;
@@ -194,8 +222,6 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    // Selling Items
-
     private boolean sellHand ( int quantity, Player player) {
         String item = processor.getHeldItem(player);
         Boolean valid = processor.isValidItem(player, item);
@@ -208,7 +234,6 @@ public final class DynamicMarketplace extends JavaPlugin {
         if ( !valid ) return true;
         int soldAmount = processor.takeItemFromPlayer(item, quantity, player);
         double saleprice = processor.getSalePrice(item, soldAmount);
-
         if ( soldAmount == 0 ){
             Interactions.noItems(item, player);
             return true;
@@ -217,7 +242,6 @@ public final class DynamicMarketplace extends JavaPlugin {
             Interactions.saleShortItems( item, player, soldAmount, saleprice );
         else 
             Interactions.saleItems( item, player, soldAmount, saleprice );
-
         processor.insertItemIntoShop(item, soldAmount);
         economy.depositPlayer(player, saleprice);
         costs.save();
@@ -241,6 +265,4 @@ public final class DynamicMarketplace extends JavaPlugin {
         costs.save();
         return true;
     }
-
-
 }
