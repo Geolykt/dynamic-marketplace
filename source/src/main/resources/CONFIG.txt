@@ -49,10 +49,10 @@ Multiplier: growing 1.4
 #             Costs are listed only for non-craftable items, crafted items get recipies
 # ----------------------------------------------------------------
 
-Costs: plugins/DynamicMarket/costs/blocks.txt
-Costs: plugins/DynamicMarket/costs/farming.txt
-Costs: plugins/DynamicMarket/costs/materials.txt
-Costs: plugins/DynamicMarket/costs/misc.txt
+Costs: costs/blocks.txt
+Costs: costs/farming.txt
+Costs: costs/materials.txt
+Costs: costs/misc.txt
 
 
 
@@ -62,13 +62,13 @@ Costs: plugins/DynamicMarket/costs/misc.txt
 #                   a custom server feel
 # ----------------------------------------------------------------
 
-Recipies: plugins/DynamicMarket/recipies/wooden.txt
-Recipies: plugins/DynamicMarket/recipies/tools.txt
-Recipies: plugins/DynamicMarket/recipies/bricks.txt
-Recipies: plugins/DynamicMarket/recipies/farming.txt
-Recipies: plugins/DynamicMarket/recipies/redstone.txt
-Recipies: plugins/DynamicMarket/recipies/nether.txt
-Recipies: plugins/DynamicMarket/recipies/end.txt
-Recipies: plugins/DynamicMarket/recipies/miscItems.txt
-Recipies: plugins/DynamicMarket/recipies/villagers.txt
-Recipies: plugins/DynamicMarket/recipies/extras.txt
+Recipies: recipies/wooden.txt
+Recipies: recipies/tools.txt
+Recipies: recipies/bricks.txt
+Recipies: recipies/farming.txt
+Recipies: recipies/redstone.txt
+Recipies: recipies/nether.txt
+Recipies: recipies/end.txt
+Recipies: recipies/miscItems.txt
+Recipies: recipies/villagers.txt
+Recipies: recipies/extras.txt
