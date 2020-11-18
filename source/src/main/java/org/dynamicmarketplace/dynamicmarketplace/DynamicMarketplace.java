@@ -63,7 +63,8 @@ public final class DynamicMarketplace extends JavaPlugin {
         setupEconomy();
 
         //Setup resources
-        if (!new File(getDataFolder(), "CONFIG.txt").exists()) {
+        File configFile = new File(getDataFolder(), "CONFIG.txt");
+        if (!configFile.exists()) {
             saveResource("CONFIG.txt", false);
             saveDefaultDirectory("costs");
             saveDefaultDirectory("recipies");
@@ -71,7 +72,7 @@ public final class DynamicMarketplace extends JavaPlugin {
 
         // Save Data
         try {
-            config = new Config("plugins/DynamicMarket/CONFIG.txt");
+            config = new Config(getDataFolder(), configFile);
             costs = new Costs(config.costFiles);
             recipies = new Recipies(config.recipieFiles);
         } catch (FileNotFoundException e) {
@@ -218,7 +219,11 @@ public final class DynamicMarketplace extends JavaPlugin {
             Interactions.purchasedItems( item, quantity, cost, player);
         processor.removeItemsFromShop(item, itemsGiven);
         economy.withdrawPlayer(player, cost);
-        costs.save();
+        try {
+            costs.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -244,7 +249,11 @@ public final class DynamicMarketplace extends JavaPlugin {
             Interactions.saleItems( item, player, soldAmount, saleprice );
         processor.insertItemIntoShop(item, soldAmount);
         economy.depositPlayer(player, saleprice);
-        costs.save();
+        try {
+            costs.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -262,7 +271,11 @@ public final class DynamicMarketplace extends JavaPlugin {
         }
         Interactions.saleTotal(player, totalCount, total);
         economy.depositPlayer(player, total);
-        costs.save();
+        try {
+            costs.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 }

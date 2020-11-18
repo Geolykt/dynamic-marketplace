@@ -15,23 +15,21 @@ import java.util.HashMap;
 
 public class Config{
  
-    public ArrayList<String> recipieFiles;
-    public ArrayList<String> costFiles;
+    public ArrayList<File> recipieFiles;
+    public ArrayList<File> costFiles;
     public HashMap<String, Double> multipliers;
     public double scalar;
     public double tax;
 
-    private File file;
-    
     // Initalization
-    public Config ( String filePath ) throws FileNotFoundException {
+    public Config (File parentFolder, File file) throws FileNotFoundException {
         reset();
-        load();
+        load(parentFolder, file);
     }
 
     public void reset () {
-        recipieFiles = new ArrayList<String>();
-        costFiles = new ArrayList<String>();
+        recipieFiles = new ArrayList<File>();
+        costFiles = new ArrayList<File>();
         multipliers = new HashMap<String, Double>();
         tax = 1.03;
         scalar = 1000;
@@ -39,48 +37,42 @@ public class Config{
 
     // Load data 
 
-    public void load () throws FileNotFoundException {
+    public void load (File parentFolder, File file) throws FileNotFoundException {
         ArrayList<String> lines = Processor.loadFile( file );
-        
         for ( String line : lines ) {
-
-            if (line.length() == 0 ) continue;
-            if (line.charAt(0) == '#' ) continue;
-
+            if (line.length() == 0 || line.charAt(0) == '#') continue;
             String[] _line = line.split("\\s*:\\s*");
-
             try{
-                recieveLineData( _line[0], _line[1] );
-            }
-            catch(Exception e) {
+                recieveLineData(parentFolder, _line[0], _line[1]);
+            } catch(Exception e) {
                  Processor.loadError(line);
             }
         }
     }
 
-    private void recieveLineData ( String key, String data ){
+    private void recieveLineData (File parentFolder, String key, String data ){
         
         switch( key.toLowerCase() ){
 
             case "recipies":
-                recipieFiles.add( data );
+                recipieFiles.add(new File(parentFolder, data));
                 return;
 
             case "costs":
-                costFiles.add( data );
+                costFiles.add(new File(parentFolder, data));
                 return;
 
             case "tax":
-                tax = Double.parseDouble( data );
+                tax = Double.parseDouble(data);
                 return;
 
             case "quantityscalar":
-                scalar = Double.parseDouble( data );
+                scalar = Double.parseDouble(data);
                 return;
 
             case "multiplier":
-                String[] _data = data.split(" ");
-                multipliers.put( _data[0], Double.parseDouble(_data[1]));
+                String[] splitData = data.split(" ");
+                multipliers.put( splitData[0], Double.parseDouble(splitData[1]));
                 return;
             
             default :
@@ -92,7 +84,7 @@ public class Config{
     // Save Data
     
     // TODO: Add some save functionality?
-    // Currently no plans to have the config file change dynamicly
+    // Currently no plans to have the config file change dynamically
     public void save () {}
 
 }

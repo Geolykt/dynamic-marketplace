@@ -1,7 +1,10 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,24 +18,21 @@ import java.util.Set;
 public class Costs{
  
     private SingleCostFile[] costFiles;
+    private File[] costFileFiles;
     private ArrayList<Integer> unSavedCosts = new ArrayList<Integer>();
-    
+
     // Initalization
-
-    public Costs ( ArrayList<String> filePaths ) throws FileNotFoundException {
-
-        int costFileCount = filePaths.size();
+    public Costs (Collection<File> files) throws FileNotFoundException {
+        int costFileCount = files.size();
         costFiles = new SingleCostFile[costFileCount];
-        
-        for ( int i=0; i < costFileCount; i ++ ){
-            costFiles[i] = new SingleCostFile( filePaths.get(i) );
+        int i = 0;
+        for (File file : files) {
+            costFiles[i++] = new SingleCostFile(file);
         }
-
     }
 
     // Get Data
-
-    public double getCost ( String item ){
+    public double getCost (String item){
         for ( int i=0 ; i<costFiles.length ; i++)
             if ( costFiles[i].costs.containsKey( item ))
                 return costFiles[i].costs.get(item);
@@ -47,9 +47,10 @@ public class Costs{
             }
     }
 
-    public void save () {
-        for ( int s : unSavedCosts )
-            costFiles[s].save();
+    public void save () throws IOException {
+        for (int index : unSavedCosts) {
+            costFiles[index].save(costFileFiles[index]);
+        }
     }
 
     // get all item names, for tab completion
