@@ -67,9 +67,11 @@ public class Worth implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if(args.length > 0) { // check that args[1] actually exists
+        if(args.length > 1) { // check that args[1] actually exists
             // copy the item names list, and only return the ones that start with the argument
-            return new ArrayList<String>(itemNames).stream().filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+            return new ArrayList<>(itemNames).stream().filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+        } else if (args.length == 1) {
+            return new ArrayList<>(itemNames);
         }
         return null;
     }
