@@ -8,12 +8,12 @@ public class Interactions {
     private static String pluginName = "[DynaMark] ";
     private static String prefix = ChatColor.GREEN + pluginName + ChatColor.WHITE;
 
-    // Utils 
-
+    // Utility functions
     private static String formatString ( String message ){
         message = formatClean( message );
         return prefix + message;
     }
+
     private static String formatClean ( String message ){
         message = message.replaceAll( "\\[([^]]*)\\]", ChatColor.RED + "$1" + ChatColor.WHITE );
         message = message.replaceAll( "\\(([^)]*)\\)", ChatColor.GREEN + "$1" + ChatColor.WHITE );
@@ -21,34 +21,7 @@ public class Interactions {
         return message;
     }
 
-    // Server Interactions
-
-    public static void fileNotFound ( String filename ) {
-        String rawMessage = String.format ( "Could not find required file %s", filename);
-        System.out.println( formatString ( rawMessage ));
-    }
-
-    public static void fileLoadWarning ( String line ) {
-        String rawMessage = String.format ( "Ignoring malformed line when loading file, problem: %s", line);
-        System.out.println( formatString ( rawMessage ));
-    }
-    public static void fileUnknownKey ( String key, String file ) {
-        String rawMessage = String.format ( "Ignoring extra identifier %s in file %s", key, file);
-        System.out.println( formatString ( rawMessage ));
-    }
-
-    public static void ecconomyNotLoaded () {
-        String rawMessage = String.format ( "[Error], Could not find a loaded ecconomy. Try using Vault.");
-        System.out.println( formatString ( rawMessage ));
-    }
-    
-    public static void cannotLoadItemWhenShould ( String item) {
-        String rawMessage = String.format ( "[Error], Item %s failed to load. Make sure its recipie is defined correctly.", item);
-        System.out.println( formatString ( rawMessage ));
-    }
-
     // Client Interactions
-
     public static void intCastFailed ( String number, Player player ) {
         String rawMessage = String.format ("%s is not a valid number", number);
         player.sendMessage( formatString( rawMessage ) );
@@ -84,14 +57,12 @@ public class Interactions {
 
     public static void costing ( String item, Player player, double quantity, double buy, double sell ) {
         player.sendMessage( formatClean( String.format("{--- Dynamic Marketplace} (%s) {---}", item)));
-
         if ( buy < 0 )
             player.sendMessage( formatClean( String.format("Buy  : Not enough left to buy (%d)", (int)buy )));
         else 
             player.sendMessage( formatClean( String.format("Buy  : (%d) for $(%.2f)", (int)quantity, buy )));
         player.sendMessage( formatClean( String.format("Sell  : (%d) for $(%.2f)", (int)quantity, sell )));
         player.sendMessage( formatClean( String.format("{--------------------------------}")));
-
     }
 
 
@@ -129,7 +100,6 @@ public class Interactions {
     
 
     // Buying
-
     public static void inventorySpaceLimitBuy ( String item, int amount, double price, Player player ) {
         String rawMessage = String.format( "Could only buy (%d) (%s) for $(%.2f) because of limited inventory space", amount, item, price);
         player.sendMessage( formatString( rawMessage ) );

@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -97,10 +96,10 @@ public final class DynamicMarketplace extends JavaPlugin {
 
     private void setupEconomy () {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration( net.milkbowl.vault.economy.Economy.class);
-        economy = economyProvider == null ? null : economyProvider.getProvider();
+        economy = (economyProvider == null) ? null : economyProvider.getProvider();
         if ( economy == null ){
-            Interactions.ecconomyNotLoaded();
-            Bukkit.shutdown();
+            getServer().getPluginManager().disablePlugin(this);
+            throw new IllegalStateException("No economy was loaded.");
         }
     }
 

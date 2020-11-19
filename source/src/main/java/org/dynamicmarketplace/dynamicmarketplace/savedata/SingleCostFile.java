@@ -24,19 +24,11 @@ public class SingleCostFile {
     public void load(File file) throws FileNotFoundException {
         ArrayList<String> lines = Processor.loadFile(file);
         for (String line : lines) {
-            if (line.length() == 0)
+            if (line.length() == 0 || line.charAt(0) == '#')
                 continue;
-            if (line.charAt(0) == '#')
-                continue;
-
-            try {
-                String[] _line = line.split("\\s*:\\s*");
-                double cost = Double.parseDouble(_line[1]);
-                costs.put(_line[0], cost/100000);
-            } catch (Exception e) {
-                Processor.loadError(line);
-            }
-
+            String[] _line = line.split("\\s*:\\s*");
+            double cost = Double.parseDouble(_line[1]);
+            costs.put(_line[0], cost / 100000);
         }
     }
 

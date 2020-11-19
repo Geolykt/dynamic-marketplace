@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.dynamicmarketplace.dynamicmarketplace.exceptions.UnexpectedStateException;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.*;
 
 public class Processor {
@@ -79,7 +80,9 @@ public class Processor {
 
     public double getBuyPrice ( String validItem, double buyAmount ) {
         double price = getBaseBuyPrice(validItem, buyAmount);
-        if ( price == 0) Interactions.cannotLoadItemWhenShould(validItem);
+        if (price == 0) {
+            throw new UnexpectedStateException("Buy price of an item is 0: " + validItem);
+        }
         return price * config.tax * config.scalar;
     }
     public double getBaseBuyPrice ( String validItem, double amount ) {
@@ -114,7 +117,9 @@ public class Processor {
 
     public double getSalePrice ( String validItem, double saleAmount ) {
         double price = getBaseSalePrice(validItem, saleAmount);
-        if ( price == 0) Interactions.cannotLoadItemWhenShould(validItem);
+        if (price == 0) {
+            throw new UnexpectedStateException("Buy price of an item is 0: " + validItem);
+        }
         return price * (1/config.tax) * config.scalar;
     }
     public double getBaseSalePrice ( String validItem, double amount ) {

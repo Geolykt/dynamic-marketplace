@@ -21,22 +21,15 @@ public class SingleRecipieFile {
     public void load(File file) throws FileNotFoundException {
         ArrayList<String> lines = Processor.loadFile(file);
         for (String line : lines) {
-            if (line.length() == 0)
-                continue;
-            if (line.charAt(0) == '#')
-                continue;
-            try {
-                String[] _line = line.split("\\s*:\\s*");
-                String[] components = _line[1].split("\\s*,\\s*");
-                Recipie recipie = new Recipie(components.length);
-                for (int i = 0; i < components.length; i++) {
-                    String[] costs = components[i].split("\\s+");
-                    recipie.pushItem(costs[0], Double.parseDouble(costs[1]));
-                }
-                recipies.put(_line[0], recipie);
-            } catch (Exception e) {
-                Processor.loadError(line);
+            if (line.length() == 0 || line.charAt(0) == '#') continue;
+            String[] _line = line.split("\\s*:\\s*");
+            String[] components = _line[1].split("\\s*,\\s*");
+            Recipie recipie = new Recipie(components.length);
+            for (int i = 0; i < components.length; i++) {
+                String[] costs = components[i].split("\\s+");
+                recipie.pushItem(costs[0], Double.parseDouble(costs[1]));
             }
+            recipies.put(_line[0], recipie);
         }
     }
 
