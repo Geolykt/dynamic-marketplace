@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.dynamicmarketplace.dynamicmarketplace.Util;
+
 public class SingleRecipieFile {
 
     public HashMap<String, Recipie> recipies;
@@ -19,7 +21,7 @@ public class SingleRecipieFile {
 
     // Load data
     public void load(File file) throws FileNotFoundException {
-        ArrayList<String> lines = Processor.loadFile(file);
+        ArrayList<String> lines = Util.getLines(file);
         for (String line : lines) {
             if (line.length() == 0 || line.charAt(0) == '#') continue;
             String[] _line = line.split("\\s*:\\s*");

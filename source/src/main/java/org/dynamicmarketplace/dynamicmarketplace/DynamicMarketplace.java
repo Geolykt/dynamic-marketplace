@@ -6,12 +6,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +27,7 @@ public final class DynamicMarketplace extends JavaPlugin {
     private Economy economy;
 
     private InputParser inputParser;
-    private Processor processor;
+    private EcoProcessor processor;
 
     private Config config;
     private Costs costs;
@@ -65,14 +67,14 @@ public final class DynamicMarketplace extends JavaPlugin {
         File configFile = new File(getDataFolder(), "CONFIG.txt");
         if (!configFile.exists()) {
             saveResource("CONFIG.txt", false);
-            saveDefaultDirectory("costs");
+            saveResource("costs.yml", false);
             saveDefaultDirectory("recipies");
         }
 
         // Save Data
         try {
             config = new Config(getDataFolder(), configFile);
-            costs = new Costs(config.costFiles);
+            costs = new Costs(new File(getDataFolder(), "costs.yml"));
             recipies = new Recipies(config.recipieFiles);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -82,10 +84,10 @@ public final class DynamicMarketplace extends JavaPlugin {
 
         // Commands
         inputParser = new InputParser();
-        processor = new Processor(recipies, costs, config);
+        processor = new EcoProcessor(costs, recipies, (1/config.tax), config.tax); // TODO todo
 
         // setup worth command
-        Set<String> itemNames = new HashSet<String>();
+        Set<String> itemNames = new LinkedHashSet<String>();
         itemNames.addAll(costs.getItemNames());
         itemNames.addAll(recipies.getItemNames());
         Worth worthCmd = new Worth(processor, economy, itemNames);
@@ -118,22 +120,22 @@ public final class DynamicMarketplace extends JavaPlugin {
             case "iteminfo":
                 if ( args.length == 0 ) 
                     return getInfoOnHand(player);
-                return getInfoOnItem(player, args[0] );
+                return getInfoOnItem(player, Material.getMaterial(args[0]));
             case "cost":
-                if ( args.length == 0 ) 
+                if (args.length == 0) 
                     return false;
-                if (args.length == 1 )
-                    return doCostings(player, args[0], 1) ;
+                if (args.length == 1)
+                    return doCostings(player, Material.getMaterial(args[0]), 1) ;
                 count = inputParser.castInt(args[1], player);
-                return doCostings(player, args[0], count) ;
+                return doCostings(player, Material.getMaterial(args[0]), count) ;
             // Purchasing Items
             case "buy":
-                if ( args.length == 0 ) 
+                if (args.length == 0)
                     return false;
-                if ( args.length == 1 ) 
-                    return purchaseItem(args[0], 1, player);
+                if (args.length == 1)
+                    return purchaseItem(Material.getMaterial(args[0]), 1, player);
                 count = inputParser.castInt(args[1], player);
-                return count < 1 ? true : purchaseItem(args[0], count, player);
+                return count < 1 ? true : purchaseItem(Material.getMaterial(args[0]), count, player);
             case "buyhand":
                 if ( args.length == 0 ) 
                     return purchaseHand(1, player);
@@ -141,82 +143,80 @@ public final class DynamicMarketplace extends JavaPlugin {
                 return count < 1 ? true : purchaseHand( count, player);
             // Sell Items
             case "sellhand":
-                if ( args.length == 0 ) 
-                    return sellHand( processor.getHandQuantity(player), player);
+                if (args.length == 0) 
+                    return sellHand(player.getInventory().getItemInMainHand().getAmount(), player);
                 count = inputParser.castInt(args[0], player);
                 return count < 1 ? true : sellHand( count, player);
             case "sell":
-                if ( args.length == 0 ) 
+                if (args.length == 0) 
                     return false;
-                if ( args.length == 1 ) 
-                    return sellItem(args[0], 1, player);
+                if (args.length == 1) 
+                    return sellItem(Material.getMaterial(args[0]), 1, player);
                 count = inputParser.castInt(args[1], player);
-                return count < 1 ? true : sellItem( args[0], count, player);
+                return count < 1 ? true : sellItem(Material.getMaterial(args[0]), count, player);
             case "sellall":
                 return sellAll(player);
         }
         return true;
     }
 
-    private boolean getInfoOnHand ( Player player ) {
-        String item = processor.getHeldItem(player);
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
-        return getInfoOnItem( player, item );
+    private boolean getInfoOnHand (Player player) {
+        return getInfoOnItem(player, Util.getItemInHand(player));
     }
 
-    private boolean getInfoOnItem ( Player player, String item ) {
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
-        Double quantity = processor.getShopQuantity(item);
-        Double buySingle = processor.getBuyPrice(item, 1);
-        Double buyStack = processor.getBuyPrice(item, 64);
-        Double sellSingle = processor.getSalePrice(item, 1);
-        Double sellStack = processor.getSalePrice(item, 64);
-        Interactions.itemInfo(item, player, quantity, new double[]{buySingle, buyStack, sellSingle, sellStack});
+    private boolean getInfoOnItem (Player player, Material item) {
+        if (item == null || !processor.canSell(item)) {
+            return true;
+        }
+//        Double quantity = processor.getShopQuantity(item);
+        Double buySingle = processor.getItemBuyPrice(item, 1);
+        Double buyStack = processor.getItemBuyPrice(item, 64);
+        Double sellSingle = processor.getItemSellPrice(item, 1);
+        Double sellStack = processor.getItemSellPrice(item, 64);
+        Interactions.itemInfo(item.toString(), player, -1, new double[]{buySingle, buyStack, sellSingle, sellStack});
         return true;
     }
 
-    private boolean doCostings ( Player player, String item, int amount ){
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
-        Double buy = processor.getBuyPrice(item, amount);
-        Double sell = processor.getSalePrice(item, amount);
-        Interactions.costing(item, player, amount, buy, sell);
+    private boolean doCostings (Player player, Material item, int amount){
+        if (!processor.canSell(item)) {
+            return true;
+        }
+        Double buy = processor.getItemBuyPrice(item, amount);
+        Double sell = processor.getItemSellPrice(item, amount);
+        Interactions.costing(item.toString(), player, amount, buy, sell);
         return true;
     }
 
-    private boolean purchaseHand ( int quantity, Player player) {
-        String item = processor.getHeldItem(player);
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
+    private boolean purchaseHand (int quantity, Player player) {
+        Material item = Util.getItemInHand(player);
         return purchaseItem(item, quantity, player);
     }
 
-    private boolean purchaseItem ( String item, int quantity, Player player ) {
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
-        Double cost = processor.getBuyPrice(item, quantity);
-        Double balance = economy.getBalance( player );
-        if ( cost > balance ) {
-            Interactions.itemCostTooMuch( item, player, quantity, balance, cost );
+    private boolean purchaseItem (Material item, int quantity, Player player) {
+        if (!processor.canSell(item)) {
             return true;
         }
-        if ( cost < 0 ) {
-            Interactions.itemsRunOut(item, player);
+        Double cost = processor.getItemBuyPrice(item, quantity);
+        Double balance = economy.getBalance(player);
+        if (cost > balance) {
+            Interactions.itemCostTooMuch(item.toString(), player, quantity, balance, cost );
             return true;
         }
-        int itemsGiven = processor.givePlayerItem(item, quantity, player);
-        cost = processor.getBuyPrice(item, itemsGiven);
-        if ( itemsGiven == 0 ){
-            Interactions.noInventorySpace(item, player);
+        if (cost <= 0) {
+            Interactions.itemsRunOut(item.toString(), player);
             return true;
         }
-        else if ( itemsGiven < quantity)
-            Interactions.inventorySpaceLimitBuy( item, itemsGiven, cost, player );
-        else 
-            Interactions.purchasedItems( item, quantity, cost, player);
-        processor.removeItemsFromShop(item, itemsGiven);
+        int itemsGiven = Util.getPlayerItems(item, quantity, player);
+        cost = processor.getItemBuyPrice(item, itemsGiven);
+        if (itemsGiven == 0) {
+            Interactions.noInventorySpace(item.toString(), player);
+            return true;
+        } else if (itemsGiven < quantity) {
+            Interactions.inventorySpaceLimitBuy(item.toString(), itemsGiven, cost, player);
+        } else  {
+            Interactions.purchasedItems(item.toString(), quantity, cost, player);
+        }
+        processor.processDemandIncrease(item, itemsGiven);
         economy.withdrawPlayer(player, cost);
         try {
             costs.save();
@@ -226,27 +226,26 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    private boolean sellHand ( int quantity, Player player) {
-        String item = processor.getHeldItem(player);
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
-        return sellItem(item, quantity, player);
+    private boolean sellHand (int quantity, Player player) {
+        return sellItem(Util.getItemInHand(player), quantity, player);
     }
 
-    private boolean sellItem ( String item, int quantity, Player player ) {
-        Boolean valid = processor.isValidItem(player, item);
-        if ( !valid ) return true;
-        int soldAmount = processor.takeItemFromPlayer(item, quantity, player);
-        double saleprice = processor.getSalePrice(item, soldAmount);
-        if ( soldAmount == 0 ){
-            Interactions.noItems(item, player);
+    private boolean sellItem (Material item, int quantity, Player player) {
+        if (!processor.canSell(item)) {
             return true;
         }
-        else if ( soldAmount < quantity)
-            Interactions.saleShortItems( item, player, soldAmount, saleprice );
-        else 
-            Interactions.saleItems( item, player, soldAmount, saleprice );
-        processor.insertItemIntoShop(item, soldAmount);
+        int soldAmount = Util.removePlayerItems(item, quantity, player);
+        if (soldAmount == 0){
+            Interactions.noItems(item.toString(), player);
+            return true;
+        }
+        double saleprice = processor.getItemSellPrice(item, soldAmount);
+        if (soldAmount < quantity) {
+            Interactions.saleShortItems(item.toString(), player, soldAmount, saleprice);
+        } else {
+            Interactions.saleItems(item.toString(), player, soldAmount, saleprice);
+        }
+        processor.processSupplyIncrease(item, soldAmount);
         economy.depositPlayer(player, saleprice);
         try {
             costs.save();
@@ -256,17 +255,17 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    private boolean sellAll ( Player player ){
-        HashMap<String,Integer> soldItems = processor.removeAllValidFromInventory(player);
+    private boolean sellAll (Player player) {
+        Map<Material,Integer> soldItems = processor.removeAllSellables(player);
         double total = 0;
         int totalCount = 0;
         Interactions.saleHeader(player);
-        for (HashMap.Entry<String, Integer> entry : soldItems.entrySet()) {
-            double salePrice = processor.getSalePrice(entry.getKey(), entry.getValue());
+        for (Entry<Material, Integer> entry : soldItems.entrySet()) {
+            double salePrice = processor.getItemSellPrice(entry.getKey(), entry.getValue());
             total += salePrice;
             totalCount += entry.getValue();
-            Interactions.saleItemsCompact( entry.getKey(), player, entry.getValue(), salePrice );
-            processor.insertItemIntoShop(entry.getKey(), entry.getValue());
+            Interactions.saleItemsCompact(entry.getKey().toString(), player, entry.getValue(), salePrice);
+            processor.processSupplyIncrease(entry.getKey(), entry.getValue());
         }
         Interactions.saleTotal(player, totalCount, total);
         economy.depositPlayer(player, total);

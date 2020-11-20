@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.dynamicmarketplace.dynamicmarketplace.Util;
+
 public class Config{
  
     public ArrayList<File> recipieFiles;
@@ -20,18 +22,17 @@ public class Config{
     }
 
     public void reset () {
-        recipieFiles = new ArrayList<File>();
-        costFiles = new ArrayList<File>();
-        multipliers = new HashMap<String, Double>();
+        recipieFiles = new ArrayList<>();
+        costFiles = new ArrayList<>();
+        multipliers = new HashMap<>();
         tax = 1.03;
         scalar = 1000;
     }
 
     // Load data 
-
     public void load (File parentFolder, File file) throws FileNotFoundException {
-        ArrayList<String> lines = Processor.loadFile( file );
-        for ( String line : lines ) {
+        ArrayList<String> lines = Util.getLines(file);
+        for (String line : lines) {
             if (line.length() == 0 || line.charAt(0) == '#') continue;
             String[] _line = line.split("\\s*:\\s*");
             recieveLineData(parentFolder, _line[0], _line[1]);
@@ -39,7 +40,6 @@ public class Config{
     }
 
     private void recieveLineData (File parentFolder, String key, String data ){
-
         switch( key.toLowerCase() ){
 
             case "recipies":
@@ -67,11 +67,4 @@ public class Config{
                 throw new IllegalStateException("Key " + key + " doesn't exist within the main config file.");
         }
     }
-
-    // Save Data
-    
-    // TODO: Add some save functionality?
-    // Currently no plans to have the config file change dynamically
-    public void save () {}
-
 }

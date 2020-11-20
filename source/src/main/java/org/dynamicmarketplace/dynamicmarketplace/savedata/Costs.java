@@ -1,65 +1,68 @@
 package org.dynamicmarketplace.dynamicmarketplace.savedata;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumMap;
 import java.util.Set;
 
-/* ==================================================================
-    Cost Save Data
-    - Controlls access and loading of the varius cost/*.txt files 
-    - Reads and interprits file as key double pairs
-================================================================== */
-
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Costs{
- 
-    private SingleCostFile[] costFiles;
-    private File[] costFileFiles;
-    private ArrayList<Integer> unSavedCosts = new ArrayList<Integer>();
 
-    // Initalization
-    public Costs (Collection<File> files) throws FileNotFoundException {
-        int costFileCount = files.size();
-        costFiles = new SingleCostFile[costFileCount];
-        int i = 0;
-        for (File file : files) {
-            costFiles[i++] = new SingleCostFile(file);
+    private EnumMap<Material, Double> sellValues = new EnumMap<>(Material.class);
+    private EnumMap<Material, Double> demandMod = new EnumMap<>(Material.class);
+    private EnumMap<Material, Double> supplyMod = new EnumMap<>(Material.class);
+    private EnumMap<Material, String> sectionNames = new EnumMap<>(Material.class);
+    private Set<String> itemNames;
+    private final ConfigurationSection section;
+
+    // Initialisation
+    public Costs (File file) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        section = config.getConfigurationSection("materials");
+        itemNames = section.getKeys(false);
+        for (String materialName : itemNames) {
+            Material material = Material.matchMaterial(materialName);
+            if (material == null) {
+                continue;
+            }
+            sellValues.put(material, section.getDouble(materialName + ".cost"));
+            demandMod.put(material, section.getDouble(materialName + ".demandprice"));
+            supplyMod.put(material, section.getDouble(materialName + ".supplyprice"));
+            sectionNames.put(material, materialName);
         }
     }
 
     // Get Data
-    public double getCost (String item){
-        for ( int i=0 ; i<costFiles.length ; i++)
-            if ( costFiles[i].costs.containsKey( item ))
-                return costFiles[i].costs.get(item);
-        return -1;
+    public double getCost (Material item){
+        return sellValues.getOrDefault(item, -1.0);
     }
 
-    public void updateCost ( String item, double cost ) {
-        for ( int i=0 ; i<costFiles.length ; i++)
-            if ( costFiles[i].costs.containsKey( item )){
-                unSavedCosts.add(i);
-                costFiles[i].updateCost(item, cost);
-            }
+    public void updateCost (Material item, double cost) {
+        sellValues.put(item, cost);
+        section.set(sectionNames.get(item) + ".cost", cost);
     }
 
     public void save () throws IOException {
-        for (int index : unSavedCosts) {
-            costFiles[index].save(costFileFiles[index]);
-        }
+        // FileConfigurations save automatically - however this will be needed once we go into binary storage means.
     }
 
     // get all item names, for tab completion
     public Set<String> getItemNames() {
-        Set<String> names = new HashSet<String>();
+        return itemNames;
+    }
 
-        for(SingleCostFile costFile : costFiles) {
-            names.addAll(costFile.getItemNames());
-        }
-        return names;
+    public boolean exists(Material material) {
+        return sellValues.getOrDefault(material, 0.0) != 0.0;
+    }
+
+    public void processDemand(Material item, int amount) {
+        updateCost(item, getCost(item) + (amount * demandMod.getOrDefault(item, 0.0)));
+    }
+
+    public void processSupply(Material item, int amount) {
+        updateCost(item, getCost(item) - (amount * supplyMod.getOrDefault(item, 0.0)));
     }
 }

@@ -12,7 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.dynamicmarketplace.dynamicmarketplace.Processor;
+import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -21,11 +21,11 @@ public class Worth implements CommandExecutor, TabCompleter {
     // stores valid item names
     private final Set<String> itemNames;
 
-    private final Processor processor;
+    private final EcoProcessor processor;
     private final Economy eco;
 
     // construct worth command object with a list of valid item names to tab complete with
-    public Worth(Processor process, Economy economy, Set<String> itemNames) {
+    public Worth(EcoProcessor process, Economy economy, Set<String> itemNames) {
         this.itemNames = itemNames;
         this.processor = process;
         this.eco = economy;
@@ -50,9 +50,9 @@ public class Worth implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.RED + "Cannot calcuate the price of air.");
             return true;
         }
-        double base = processor.getBaseSalePrice(material.toString().toLowerCase(), 1);
+        double base = processor.getItemSellPrice(material);
         if (amount != -1) {
-            double all = processor.getBaseSalePrice(material.toString().toLowerCase(), amount);
+            double all = processor.getItemSellPrice(material, amount);
             sender.sendMessage(ChatColor.DARK_GREEN + material.toString() + " " + ChatColor.GREEN + "would be worth " 
                     + ChatColor.DARK_GREEN + eco.format(base) + ChatColor.GREEN + " per item right now. In total your "
                     + ChatColor.DARK_GREEN + amount + ChatColor.GREEN + " of " 
