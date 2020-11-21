@@ -7,18 +7,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
-import org.dynamicmarketplace.dynamicmarketplace.savedata.Recipies;
 
 public class EcoProcessor {
 
     private final Costs costs;
-    private final Recipies recipies;
     private final double buyModifier;
     private final double sellModifier;
 
-    public EcoProcessor(Costs costs, Recipies recipies, double sellMod, double buyMod) {
+    public EcoProcessor(final Costs costs, double sellMod, double buyMod) {
         this.costs = costs;
-        this.recipies = recipies;
         this.buyModifier = buyMod;
         this.sellModifier = sellMod;
     }

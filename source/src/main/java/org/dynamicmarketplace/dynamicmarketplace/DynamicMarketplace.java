@@ -5,13 +5,8 @@ import net.milkbowl.vault.economy.Economy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -31,30 +26,6 @@ public final class DynamicMarketplace extends JavaPlugin {
 
     private Config config;
     private Costs costs;
-    private Recipies recipies;
-
-    /**
-     * Saves an directory within the plugin jar to the data folder.
-     *  Source: 
-     *https://github.com/2008Choco/DragonEggDrop/blob/master/src/main/java/wtf/choco/dragoneggdrop/DragonEggDrop.java#L249-L266
-     * @param directory The directory to save
-     * @author 2008Choco
-     */
-    private void saveDefaultDirectory(String directory) {
-        try (JarFile jar = new JarFile(getFile())) {
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                String name = entry.getName();
-                if (!name.startsWith(directory + "/") || entry.isDirectory()) {
-                    continue;
-                }
-                this.saveResource(name, false);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     // Init
     @Override
@@ -68,14 +39,12 @@ public final class DynamicMarketplace extends JavaPlugin {
         if (!configFile.exists()) {
             saveResource("CONFIG.txt", false);
             saveResource("costs.yml", false);
-            saveDefaultDirectory("recipies");
         }
 
         // Save Data
         try {
             config = new Config(getDataFolder(), configFile);
             costs = new Costs(new File(getDataFolder(), "costs.yml"));
-            recipies = new Recipies(config.recipieFiles);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
@@ -84,13 +53,10 @@ public final class DynamicMarketplace extends JavaPlugin {
 
         // Commands
         inputParser = new InputParser();
-        processor = new EcoProcessor(costs, recipies, (1/config.tax), config.tax); // TODO todo
+        processor = new EcoProcessor(costs, (1/config.tax), config.tax); // TODO todo
 
         // setup worth command
-        Set<String> itemNames = new LinkedHashSet<String>();
-        itemNames.addAll(costs.getItemNames());
-        itemNames.addAll(recipies.getItemNames());
-        Worth worthCmd = new Worth(processor, economy, itemNames);
+        Worth worthCmd = new Worth(processor, economy, costs.getItemNames());
 
         getCommand("worth").setExecutor(worthCmd);
         getCommand("worth").setTabCompleter(worthCmd);

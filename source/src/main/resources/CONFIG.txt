@@ -1,3 +1,4 @@
+# This file is in YAML, but not really! Beware on what you edit!
 #     _____                              _        __  __            _        _         _                
 #    |  __ \                            (_)      |  \/  |          | |      | |       | |               
 #    | |  | |_   _ _ __   __ _ _ __ ___  _  ___  | \  / | __ _ _ __| | _____| |_ _ __ | | __ _  ___ ___ 
@@ -7,68 +8,6 @@
 #            __/ |                                                             | |                     
 #            |___/                                                              |_|                     
 #
-# This plugin allows you to have prices of items on the server fluxuate basted on supply and demand
-# Prices are calculted by taking into account crafting recipies, allowing prices of one item to effect others
-# This is the main configuration file for dynamic market, use it to setup your economy
-
-
-# ----------------------------------------------------------------
-# Price Scale information
-# [QuantityScalar] will be the aproximate price of an item if there is only one left in the shop
-#       Prices are proportional to 1/quantity, so with 10x more of an item, it costs 1/10th as much
-# [Multipliers] are applied only when BUYING items and make specific items cost more to buy
-#       IE: any item that requires crafting will have its final price multiplied by the crafting Multiplier
-#       for every craft that went into it.
-#       Adding in custom modifiers is possible if you want, but do not remove default ones.
-# ----------------------------------------------------------------
-
-QuantityScalar: 5000
-
+# This is a modifier that is imposed on buying and selling items that affect the price. In general the buy price is multiplied with this number,
+# where as the sell price is multiplied with the multiplicative inverse of this number. This means that if Tax is 2, then the sell price is multiplied by 0.5.
 Tax: 1.03
-Multiplier: crafting 1.01
-Multiplier: smelting 1.05
-Multiplier: growing 1.4
-
-
-
-# ----------------------------------------------------------------
-# Cost Files: files used to determine the base cost of items 
-#             these files will be edited by the plugin over time
-#             dont change them while the server is running
-#
-#             In cost files, the number represents the relative price of an item, not its absolue price
-#             specificly, final costs are calculated by
-#                   first scaling down the listed cost by a factor of 100,000
-#                   using 1/cost to aproximate item quantity
-#                   calculating any crafting modifiers to the price
-#                   then scaling it up by a factor of [QuantityScalar] 
-#             
-#             If you want to change the overall price level, adjust [QuantityScalar]
-#             If you want to adjust the price of a specific item, change the cost file number
-#             Not every item is accounted for by default, but edits are easy
-#             Costs are listed only for non-craftable items, crafted items get recipies
-# ----------------------------------------------------------------
-
-Costs: costs/blocks.txt
-Costs: costs/farming.txt
-Costs: costs/materials.txt
-Costs: costs/misc.txt
-
-
-
-# ----------------------------------------------------------------
-# Recipie Files, files used to determine the relative cost of items
-#                Adding your own unique recipies is easily doable for
-#                   a custom server feel
-# ----------------------------------------------------------------
-
-Recipies: recipies/wooden.txt
-Recipies: recipies/tools.txt
-Recipies: recipies/bricks.txt
-Recipies: recipies/farming.txt
-Recipies: recipies/redstone.txt
-Recipies: recipies/nether.txt
-Recipies: recipies/end.txt
-Recipies: recipies/miscItems.txt
-Recipies: recipies/villagers.txt
-Recipies: recipies/extras.txt

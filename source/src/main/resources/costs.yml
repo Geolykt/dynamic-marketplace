@@ -1,0 +1,510 @@
+# This is the main configuration file of the plugin. Handle with great care!
+materials:
+  # Stone, Cobblestone and similar
+  cobblestone:
+    cost: 0.1 # Note that the cost may fluctuate over time with increase of demand and supply
+    demandprice: 0.0001 # signifies how much the price should go UP if the demand increases (through players buying).
+    supplyprice: 0.0001 # signifies how much the price should go DOWN if the supply increases (though players selling). Negative numbers will lead to the price going up, but it's no recommended
+  stone:
+    cost: 0.5
+    demandprice: 0.0002
+    supplyprice: 0.0002
+  andesite:
+    cost: 0.8
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  diorite:
+    cost: 0.8
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  granite:
+    cost: 0.8
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  netherrack:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  obsidian:
+    cost: 4.0
+    demandprice: 0.001
+    supplyprice: 0.001
+
+  # Dirt-like materials
+  grass_block:
+    cost: 1.5
+    demandprice: 0.005
+    supplyprice: 0.005
+  dirt:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  podzol:
+    cost: 2.0
+    demandprice: 0.008
+    supplyprice: 0.008
+  mycelium:
+    cost: 4.0
+    demandprice: 0.01
+    supplyprice: 0.01
+
+  # Sand
+  sand:
+    cost: 1.2
+    demandprice: 0.0005
+    supplyprice: 0.0005
+  red_sand:
+    cost: 1.8
+    demandprice: 0.001
+    supplyprice: 0.001
+
+  # Gravel, clay and others
+  clay_ball:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  clay:
+    cost: 2.0
+    demandprice: 0.0004
+    supplyprice: 0.0004
+  gravel:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+
+  # Ice & Snow
+  ice:
+    cost: 0.25
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  packed_ice:
+    cost: 2.25
+    demandprice: 0.0009
+    supplyprice: 0.0009
+  blue_ice:
+    cost: 20.25
+    demandprice: 0.0081
+    supplyprice: 0.0081
+  snow:
+    cost: 0.15
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  snow_block:
+    cost: 0.6
+    demandprice: 0.0004
+    supplyprice: 0.0004
+
+  # Ores
+  coal_ore:
+    cost: 2.5
+    demandprice: 0.001
+    supplyprice: 0.001
+  iron_ore:
+    cost: 5.0
+    demandprice: 0.005
+    supplyprice: 0.005
+  gold_ore:
+    cost: 8.0
+    demandprice: 0.008
+    supplyprice: 0.008
+  redstone_ore:
+    cost: 5.0
+    demandprice: 0.006
+    supplyprice: 0.006
+  lapis_ore:
+    cost: 6.5
+    demandprice: 0.006
+    supplyprice: 0.006
+  emerald_ore:
+    cost: 15.0
+    demandprice: 0.009
+    supplyprice: 0.009
+  diamond_ore:
+    cost: 20.0
+    demandprice: 0.012
+    supplyprice: 0.012
+  nether_quartz_ore:
+    cost: 4.5
+    demandprice: 0.0018
+    supplyprice: 0.0018
+
+  # Logs
+  oak_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  dark_oak_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  acacia_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  birch_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  jungle_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  spruce_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+
+  # Stripped logs
+  stripped_oak_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  stripped_dark_oak_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  stripped_acacia_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  stripped_birch_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  stripped_jungle_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  stripped_spruce_log:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+
+  # Planks
+  oak_planks:
+    cost: 0.25
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  dark_oak_planks:
+    cost: 0.25
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  acacia_planks:
+    cost: 0.25
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  birch_planks:
+    cost: 0.25
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  jungle_planks:
+    cost: 0.25
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  spruce_planks:
+    cost: 0.25
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  crimson_planks:
+    cost: 2.0
+    demandprice: 0.00003
+    supplyprice: 0.00003
+  warped_planks:
+    cost: 2.0
+    demandprice: 0.00003
+    supplyprice: 0.00003
+
+  # Leaves
+  oak_leaves:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  dark_oak_leaves:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  acacia_leaves:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  birch_leaves:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  jungle_leaves:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  spruce_leaves:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+
+  # Foods
+  apple:
+    cost: 2.5
+    demandprice: 0.0002
+    supplyprice: 0.0002
+  bread:
+    cost: 1.5
+    demandprice: 0.0002
+    supplyprice: 0.0002
+  cooked_beef:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cooked_chicken:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cooked_cod:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cooked_mutton:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cooked_porkchop:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cooked_rabbit:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cooked_salmon:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cake:
+    cost: 13.5
+    demandprice: 0.0006
+    supplyprice: 0.0006
+  pumpkin_pie:
+    cost: 5.0
+    demandprice: 0.0004
+    supplyprice: 0.0004
+  baked_potato:
+    cost: 0.8
+    demandprice: 0.0002
+    supplyprice: 0.0002
+
+  # Farming supplies
+  carrot:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  potato:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  wheat_seeds:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  wheat:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  carrot:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  bamboo:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  beetroot:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  beetroot_seeds:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  cactus:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  sugar_cane:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  melon:
+    cost: 0.9
+    demandprice: 0.0009
+    supplyprice: 0.0009
+  melon_slice:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  melon_seeds:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  pumpkin:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  pumpkin_seeds:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  cocoa_beans:
+    cost: 0.2
+    demandprice: 0.0001
+    supplyprice: 0.0001
+
+  # Raw meat
+  beef:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  chicken:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  cod:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  mutton:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  porkchop:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  rabbit:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+  salmon:
+    cost: 3.5
+    demandprice: 0.0003
+    supplyprice: 0.0003
+
+
+  # Mob drops
+  leather:
+    cost: 0.5
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  wool: # Color it yourself
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  rotten_flesh:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  string:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  egg:
+    cost: 0.1
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  pufferfish:
+    cost: 1.0
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  rabbit_foot:
+    cost: 5.0
+    demandprice: 0.0005
+    supplyprice: 0.0005
+  rabbit_hide:
+    cost: 0.2
+    demandprice: 0.0001
+    supplyprice: 0.0001
+
+  # Ingots & Smelted ores
+  coal:
+    cost: 2.0
+    demandprice: 0.001
+    supplyprice: 0.001
+  iron_ingot:
+    cost: 5.5
+    demandprice: 0.005
+    supplyprice: 0.005
+  gold_ingot:
+    cost: 9.0
+    demandprice: 0.008
+    supplyprice: 0.008
+  redstone:
+    cost: 2.5
+    demandprice: 0.002
+    supplyprice: 0.002
+  lapis_lazuli:
+    cost: 3.0
+    demandprice: 0.002
+    supplyprice: 0.002
+  emerald:
+    cost: 12.0
+    demandprice: 0.003
+    supplyprice: 0.003
+  diamond:
+    cost: 15.0
+    demandprice: 0.009
+    supplyprice: 0.009
+  quartz:
+    cost: 1.0
+    demandprice: 0.001
+    supplyprice: 0.001
+
+  # Horse armor (DLC not included)
+  iron_horse_armor:
+    cost: 100.0
+    demandprice: 0.5
+    supplyprice: 0.5
+  golden_horse_armor:
+    cost: 500.0
+    demandprice: 1.0
+    supplyprice: 1.0
+  diamon_horse_armor:
+    cost: 2500.0
+    demandprice: 2.5
+    supplyprice: 2.5
+
+  # Sponge & Prismarine
+  sponge:
+    cost: 200.0
+    demandprice: 0.08
+    supplyprice: 0.08
+  prismarine_shard:
+    cost: 2.5
+    demandprice: 0.001
+    supplyprice: 0.001
+  prismarine_crystals:
+    cost: 3.0
+    demandprice: 0.002
+    supplyprice: 0.002  
+
+  # Really expensive stuff
+  wither_skeleton_skull:
+    cost: 15000.0
+    demandprice: 3.0
+    supplyprice: 3.0
+  dragon_egg:
+    cost: 1000000.0
+    demandprice: 250000.0
+    supplyprice: 250000.0
+  nether_star:
+    cost: 50000.0
+    demandprice: 10.0
+    supplyprice: 10.0
+  dragon_head:
+    cost: 5000.0
+    demandprice: 5.0
+    supplyprice: 5.0
+  elytra:
+    cost: 15000.0
+    demandprice: 25.0
+    supplyprice: 25.0
+  heart_of_the_sea:
+    cost: 15000.0
+    demandprice: 15.0
+    supplyprice: 15.0

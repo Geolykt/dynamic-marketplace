@@ -1,5 +1,0 @@
-popped_chorus_fruit: chorus_fruit 1, smelting 1
-end_rod: blaze_rod 1, popped_chorus_fruit 1
-ender_chest: obsidian 8, ender_eye 1
-ender_eye: ender_pearl 1, blaze_powder 1
-end_crystal: ender_eye 1, ghast_tear 1, glass 8

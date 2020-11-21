@@ -1,9 +1,0 @@
-glowstone: glowstone_dust 4
-nether_wart_block: nether_wart 9
-fire_charge: blaze_powder 1, coal 1, gunpowder 1
-blaze_powder: blaze_rod 0.33
-magma_cream: slime_ball 1, blaze_powder 1
-
-brewing_stand: blaze_rod 1, cobblestone 3
-cauldron: iron_ingot 7
-glass_bottle: glass 1

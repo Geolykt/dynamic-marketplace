@@ -1,8 +1,0 @@
-
-iron_ore: 100
-gold_ore: 100
-diamond: 1000
-emerald: 50
-redstone: 10
-coal: 10
-lapis_lazuli: 25 

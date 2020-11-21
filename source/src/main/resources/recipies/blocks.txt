@@ -1,1 +1,0 @@
-stone: dirt 4
