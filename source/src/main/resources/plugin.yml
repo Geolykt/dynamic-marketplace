@@ -7,15 +7,9 @@ commands:
   buy:
     description: buy an item from the shop
     usage: /buy <item> <amount>
-  buyhand:
-    description: buy more of the item in your hand
-    usage: /buyhand <item> <amount>
   sell:
     description: sell and item to the shop
-    usage: /sell <item> <amount>
-  sellhand:
-    description: sells the item(s) currently in your hand
-    usage: /sellhand
+    usage: /sell <item|hand> <amount>
   sellall:
     description: sells everything in your inventory
     usage: /sellAll
@@ -24,10 +18,7 @@ commands:
     usage: /cost <item> <amount>
   iteminfo:
     description: see market info on a specific item
-    usage: /itemInfo <item>
-  infohand:
-    description: see market information for held item
-    usage: /infoHand
+    usage: /itemInfo <item|hand>
   worth:
     description: see the value of an item
-    usage: /worth <item> <amount>
+    usage: /worth <item|hand> <amount>

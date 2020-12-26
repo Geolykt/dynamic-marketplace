@@ -30,8 +30,8 @@ public final class DynamicMarketplace extends JavaPlugin {
     // Init
     @Override
     public void onEnable() {
-        
-        // Ecconomy
+
+        // Economy
         setupEconomy();
 
         //Setup resources
@@ -63,9 +63,9 @@ public final class DynamicMarketplace extends JavaPlugin {
     }
 
     private void setupEconomy () {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration( net.milkbowl.vault.economy.Economy.class);
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         economy = (economyProvider == null) ? null : economyProvider.getProvider();
-        if ( economy == null ){
+        if (economy == null) {
             getServer().getPluginManager().disablePlugin(this);
             throw new IllegalStateException("No economy was loaded.");
         }
@@ -74,26 +74,23 @@ public final class DynamicMarketplace extends JavaPlugin {
     // Commands
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( ! (sender instanceof Player) ) return true;
+        if (!(sender instanceof Player)) return true;
 
         Player player = (Player) sender;
         int count = 0;
 
-        switch ( command.getName().toLowerCase() ){
-            // Item Info
-            case "infohand":
-                return getInfoOnHand(player);
+        switch (command.getName().toLowerCase()){
             case "iteminfo":
-                if ( args.length == 0 ) 
+                if (args.length == 0)
                     return getInfoOnHand(player);
                 return getInfoOnItem(player, Material.getMaterial(args[0]));
             case "cost":
-                if (args.length == 0) 
-                    return false;
+                if (args.length == 0)
+                    return doCostings(player, player.getInventory().getItemInMainHand().getType(), 1);
                 if (args.length == 1)
-                    return doCostings(player, Material.getMaterial(args[0]), 1) ;
+                    return doCostings(player, Material.getMaterial(args[0]), 1);
                 count = inputParser.castInt(args[1], player);
-                return doCostings(player, Material.getMaterial(args[0]), count) ;
+                return doCostings(player, Material.getMaterial(args[0]), count);
             // Purchasing Items
             case "buy":
                 if (args.length == 0)
@@ -102,24 +99,22 @@ public final class DynamicMarketplace extends JavaPlugin {
                     return purchaseItem(Material.getMaterial(args[0]), 1, player);
                 count = inputParser.castInt(args[1], player);
                 return count < 1 ? true : purchaseItem(Material.getMaterial(args[0]), count, player);
-            case "buyhand":
-                if ( args.length == 0 ) 
-                    return purchaseHand(1, player);
-                count = inputParser.castInt(args[0], player);
-                return count < 1 ? true : purchaseHand( count, player);
-            // Sell Items
-            case "sellhand":
-                if (args.length == 0) 
-                    return sellHand(player.getInventory().getItemInMainHand().getAmount(), player);
-                count = inputParser.castInt(args[0], player);
-                return count < 1 ? true : sellHand( count, player);
             case "sell":
-                if (args.length == 0) 
-                    return false;
-                if (args.length == 1) 
-                    return sellItem(Material.getMaterial(args[0]), 1, player);
-                count = inputParser.castInt(args[1], player);
-                return count < 1 ? true : sellItem(Material.getMaterial(args[0]), count, player);
+                if (args.length == 0 || args[0].equalsIgnoreCase("hand")) {
+                    if (args.length > 1) {
+                        return sellHand(player.getInventory().getItemInMainHand().getAmount(), player);
+                    } else {
+                        count = inputParser.castInt(args[0], player);
+                        return count < 1 ? true : sellHand(count, player);
+                    }
+                } else {
+                    if (args.length == 1) {
+                        return sellItem(Material.getMaterial(args[0]), 1, player);
+                    } else {
+                        count = inputParser.castInt(args[1], player);
+                        return count < 1 ? true : sellItem(Material.getMaterial(args[0]), count, player);
+                    }
+                }
             case "sellall":
                 return sellAll(player);
         }
@@ -151,11 +146,6 @@ public final class DynamicMarketplace extends JavaPlugin {
         Double sell = processor.getItemSellPrice(item, amount);
         Interactions.costing(item.toString(), player, amount, buy, sell);
         return true;
-    }
-
-    private boolean purchaseHand (int quantity, Player player) {
-        Material item = Util.getItemInHand(player);
-        return purchaseItem(item, quantity, player);
     }
 
     private boolean purchaseItem (Material item, int quantity, Player player) {
