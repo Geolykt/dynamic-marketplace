@@ -307,10 +307,6 @@ materials:
     cost: 0.5
     demandprice: 0.0001
     supplyprice: 0.0001
-  carrot:
-    cost: 0.5
-    demandprice: 0.0001
-    supplyprice: 0.0001
   bamboo:
     cost: 0.1
     demandprice: 0.0001
@@ -392,7 +388,7 @@ materials:
     cost: 0.5
     demandprice: 0.0001
     supplyprice: 0.0001
-  wool: # Color it yourself
+  white_wool:
     cost: 1.0
     demandprice: 0.0001
     supplyprice: 0.0001
@@ -418,6 +414,10 @@ materials:
     supplyprice: 0.0005
   rabbit_hide:
     cost: 0.2
+    demandprice: 0.0001
+    supplyprice: 0.0001
+  spider_eye:
+    cost: 0.1
     demandprice: 0.0001
     supplyprice: 0.0001
 

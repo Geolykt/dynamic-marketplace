@@ -1,0 +1,53 @@
+icons:
+  "Ores and stones": STONE
+  Farming: WOODEN_HOE
+  "Mob drops": SPIDER_EYE
+contents:
+  "Ores and stones":
+    - STONE
+    - COBBLESTONE
+    - ANDESITE
+    - GRANITE
+    - DIORITE
+    - NETHERRACK
+    - OBSIDIAN
+    - COAL_ORE
+    - IRON_ORE
+    - GOLD_ORE
+    - DIAMOND_ORE
+    - EMERALD_ORE
+    - NETHER_QUARTZ_ORE
+    - COAL
+    - IRON_INGOT
+    - GOLD_INGOT
+    - DIAMOND
+    - EMERALD
+  Farming:
+    - DIRT
+    - GRASS_BLOCK
+    - SAND
+    - RED_SAND
+    - APPLE
+    - BREAD
+    - CARROT
+    - POTATO
+    - WHEAT_SEEDS
+    - BAMBOO
+    - BEETROOT
+    - BEETROOT_SEEDS
+    - CACTUS
+  "Mob drops":
+    - SPIDER_EYE
+    - COOKED_BEEF
+    - COOKED_COD
+    - COOKED_PORKCHOP
+    - BEEF
+    - CHICKEN
+    - COD
+    - SALMON
+    - LEATHER
+    - WHITE_WOOL
+    - STRING
+    - ROTTEN_FLESH
+    - RABBIT_FOOT
+    - RABBIT_HIDE

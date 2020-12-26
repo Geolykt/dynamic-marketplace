@@ -25,7 +25,7 @@ public class EcoProcessor {
     }
 
     public double getItemSellPrice(Material material, int amount) {
-        return costs.getCost(material) * amount * sellModifier; // FIXME fix
+        return costs.getCost(material) * amount * sellModifier; // FIXME fix (probably linearity, idk - comment your shit geolykt)
     }
 
     public double getItemBuyPrice(Material material) {
@@ -33,7 +33,7 @@ public class EcoProcessor {
     }
 
     public double getItemBuyPrice(Material material, int amount) {
-        return costs.getCost(material) * amount * buyModifier; // FIXME fix
+        return costs.getCost(material) * amount * buyModifier; // FIXME fix (probably linearity, idk - comment your shit geolykt)
     }
 
     public boolean canSell(Material material) {

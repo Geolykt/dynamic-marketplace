@@ -1,4 +1,4 @@
-package org.commands;
+package org.dynamicmarketplace.dynamicmarketplace.commands;
 
 import java.util.ArrayList;
 import java.util.List;

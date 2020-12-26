@@ -2,6 +2,7 @@ package org.dynamicmarketplace.dynamicmarketplace;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -11,13 +12,18 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
+
+import net.milkbowl.vault.economy.Economy;
 
 /**
  * Class holding static utility functions
  * @author Geolykt
  *
  */
-public class Util {
+public final class Util {
+
+    private Util() {}
 
     /**
      * Load in a file as a List of lines
@@ -96,5 +102,54 @@ public class Util {
             first = inv.first(item);
         }
         return removalTarget - quantity;
+    }
+
+    /**
+     * Purchases an item for a player with the given informations.
+     *  Also performs economy transactions, verification and 
+     *  informing the player on spot.
+     *  
+     * @param item The type of item to buy
+     * @param quantity The quantity to buy
+     * @param player The player that buys the item
+     * @param processor the economy processor to use
+     * @param economy The economy to use
+     * @param costs The costs instance to use
+     * @return True if it succeeded, false otherwise
+     * @since 1.0.0
+     */
+    public static boolean purchaseItem (Material item, int quantity, Player player, EcoProcessor processor,
+            Economy economy, Costs costs) {
+        if (!processor.canSell(item)) {
+            return true;
+        }
+        Double cost = processor.getItemBuyPrice(item, quantity);
+        Double balance = economy.getBalance(player);
+        if (cost > balance) {
+            Interactions.itemCostTooMuch(item.toString(), player, quantity, balance, cost );
+            return true;
+        }
+        if (cost <= 0) {
+            Interactions.itemsRunOut(item.toString(), player);
+            return true;
+        }
+        int itemsGiven = Util.getPlayerItems(item, quantity, player);
+        cost = processor.getItemBuyPrice(item, itemsGiven);
+        if (itemsGiven == 0) {
+            Interactions.noInventorySpace(item.toString(), player);
+            return true;
+        } else if (itemsGiven < quantity) {
+            Interactions.inventorySpaceLimitBuy(item.toString(), itemsGiven, cost, player);
+        } else  {
+            Interactions.purchasedItems(item.toString(), quantity, cost, player);
+        }
+        processor.processDemandIncrease(item, itemsGiven);
+        economy.withdrawPlayer(player, cost);
+        try {
+            costs.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

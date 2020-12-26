@@ -14,7 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.commands.Worth;
+import org.dynamicmarketplace.dynamicmarketplace.commands.Shop;
+import org.dynamicmarketplace.dynamicmarketplace.commands.Worth;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.*;
 
 public final class DynamicMarketplace extends JavaPlugin {
@@ -57,9 +58,12 @@ public final class DynamicMarketplace extends JavaPlugin {
 
         // setup worth command
         Worth worthCmd = new Worth(processor, economy, costs.getItemNames());
+        Shop shopCMD = new Shop(this, costs, processor, economy);
 
         getCommand("worth").setExecutor(worthCmd);
         getCommand("worth").setTabCompleter(worthCmd);
+        getCommand("shop").setExecutor(shopCMD);
+        getCommand("shop").setTabCompleter(shopCMD);
     }
 
     private void setupEconomy () {
@@ -96,9 +100,9 @@ public final class DynamicMarketplace extends JavaPlugin {
                 if (args.length == 0)
                     return false;
                 if (args.length == 1)
-                    return purchaseItem(Material.getMaterial(args[0]), 1, player);
+                    return Util.purchaseItem(Material.getMaterial(args[0]), 1, player, processor, economy, costs);
                 count = inputParser.castInt(args[1], player);
-                return count < 1 ? true : purchaseItem(Material.getMaterial(args[0]), count, player);
+                return count < 1 ? true : Util.purchaseItem(Material.getMaterial(args[0]), count, player, processor, economy, costs);
             case "sell":
                 if (args.length == 0 || args[0].equalsIgnoreCase("hand")) {
                     if (args.length > 1) {
@@ -145,40 +149,6 @@ public final class DynamicMarketplace extends JavaPlugin {
         Double buy = processor.getItemBuyPrice(item, amount);
         Double sell = processor.getItemSellPrice(item, amount);
         Interactions.costing(item.toString(), player, amount, buy, sell);
-        return true;
-    }
-
-    private boolean purchaseItem (Material item, int quantity, Player player) {
-        if (!processor.canSell(item)) {
-            return true;
-        }
-        Double cost = processor.getItemBuyPrice(item, quantity);
-        Double balance = economy.getBalance(player);
-        if (cost > balance) {
-            Interactions.itemCostTooMuch(item.toString(), player, quantity, balance, cost );
-            return true;
-        }
-        if (cost <= 0) {
-            Interactions.itemsRunOut(item.toString(), player);
-            return true;
-        }
-        int itemsGiven = Util.getPlayerItems(item, quantity, player);
-        cost = processor.getItemBuyPrice(item, itemsGiven);
-        if (itemsGiven == 0) {
-            Interactions.noInventorySpace(item.toString(), player);
-            return true;
-        } else if (itemsGiven < quantity) {
-            Interactions.inventorySpaceLimitBuy(item.toString(), itemsGiven, cost, player);
-        } else  {
-            Interactions.purchasedItems(item.toString(), quantity, cost, player);
-        }
-        processor.processDemandIncrease(item, itemsGiven);
-        economy.withdrawPlayer(player, cost);
-        try {
-            costs.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return true;
     }
 

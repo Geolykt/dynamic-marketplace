@@ -22,3 +22,6 @@ commands:
   worth:
     description: see the value of an item
     usage: /worth <item|hand> <amount>
+  shop:
+    description: The GUI Shop to buy items from
+    usage: /shop
