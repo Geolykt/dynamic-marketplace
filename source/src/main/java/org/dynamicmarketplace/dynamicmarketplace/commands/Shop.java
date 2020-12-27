@@ -50,6 +50,7 @@ public class Shop implements CommandExecutor, TabCompleter {
         controller.USERS_SECTIONMAP.put(((Player) sender).getUniqueId(), "internal_main_section");
         Inventory inv = Bukkit.createInventory((Player) sender, 27);
         controller.createSectionSelector(inv);
+        ((Player) sender).openInventory(inv);
         return true;
     }
 

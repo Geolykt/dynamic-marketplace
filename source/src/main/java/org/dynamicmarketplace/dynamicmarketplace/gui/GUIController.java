@@ -25,25 +25,29 @@ public class GUIController {
     public final ArrayList<ItemStack> SECTIONS = new ArrayList<>();
     public final ArrayList<String> SECTION_NAMES = new ArrayList<>();
 
-    private static final ItemStack NO_SECTION = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+    private static final ItemStack NO_SECTION = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
 
     public GUIController(YamlConfiguration sectionsConfig) {
         ConfigurationSection icons = sectionsConfig.getConfigurationSection("icons");
         ConfigurationSection contents = sectionsConfig.getConfigurationSection("contents");
-        for (String secionName : icons.getKeys(false)) {
-            Material mat = Material.matchMaterial(icons.getString(secionName));
+        for (String sectionName : icons.getKeys(false)) {
+            Material mat = Material.matchMaterial(icons.getString(sectionName));
             if (mat != null) {
-                SECTION_ICONS.put(secionName, mat);
-                SECTIONS.add(new ItemStack(mat));
-                SECTION_NAMES.add(secionName);
+                SECTION_ICONS.put(sectionName, mat);
+                ItemStack item = new ItemStack(mat);
+                ItemMeta itemMeta = item.getItemMeta();
+                itemMeta.setDisplayName(ChatColor.RESET + sectionName);
+                item.setItemMeta(itemMeta);
+                SECTIONS.add(item);
+                SECTION_NAMES.add(sectionName);
                 ArrayList<Material> materialContents = new ArrayList<>();
-                for (String materialName : contents.getStringList(secionName)) {
+                for (String materialName : contents.getStringList(sectionName)) {
                     materialContents.add(Material.matchMaterial(materialName));
                 }
-                SECTION_CONTENTS.put(secionName, materialContents);
+                SECTION_CONTENTS.put(sectionName, materialContents);
             } else {
                 System.err.println("Error while creating the DynamicMarket shop GUI: " 
-                        + icons.getString(secionName) + " is not a valid material!");
+                        + icons.getString(sectionName) + " is not a valid material!");
             }
         }
     }

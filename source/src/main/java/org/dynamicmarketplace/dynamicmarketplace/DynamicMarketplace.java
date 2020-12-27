@@ -105,7 +105,7 @@ public final class DynamicMarketplace extends JavaPlugin {
                 return count < 1 ? true : Util.purchaseItem(Material.getMaterial(args[0]), count, player, processor, economy, costs);
             case "sell":
                 if (args.length == 0 || args[0].equalsIgnoreCase("hand")) {
-                    if (args.length > 1) {
+                    if (args.length < 1) {
                         return sellHand(player.getInventory().getItemInMainHand().getAmount(), player);
                     } else {
                         count = inputParser.castInt(args[0], player);

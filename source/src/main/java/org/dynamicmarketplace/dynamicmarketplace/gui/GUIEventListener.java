@@ -11,9 +11,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.InventoryView.Property;
 import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
 import org.dynamicmarketplace.dynamicmarketplace.Util;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
@@ -48,7 +50,16 @@ public class GUIEventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onInventoryClick(InventoryInteractEvent e) {
+    public void onClick(InventoryClickEvent e) {
+        onInventoryInteract(e);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDrag(InventoryDragEvent e) {
+        onInventoryInteract(e);
+    }
+
+    private final void onInventoryInteract(InventoryInteractEvent e) {
         if (guiControl.USERS_SECTIONMAP.containsKey(e.getWhoClicked().getUniqueId())) {
             e.setResult(Result.DENY);
             if (e instanceof InventoryClickEvent &&
@@ -57,6 +68,7 @@ public class GUIEventListener implements Listener {
                 if (section.equals("internal_main_section")) {
                     int sectionNum = ((InventoryClickEvent) e).getRawSlot() % 9;
                     guiControl.genSection(sectionNum, e.getView().getTopInventory(), economyProcessor);
+                    guiControl.USERS_SECTIONMAP.put(e.getWhoClicked().getUniqueId(), guiControl.SECTION_NAMES.get(sectionNum));
                 } else {
                     Material m = guiControl.SECTION_CONTENTS.get(section).get(((InventoryClickEvent) e).getRawSlot());
                     e.getWhoClicked().closeInventory();
