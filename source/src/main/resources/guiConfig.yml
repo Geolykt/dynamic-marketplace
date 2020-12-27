@@ -1,7 +1,18 @@
+# Applies the enchantment glint on the section items
+sectionGlint: true
+# Applies the enchantment glint on content items
+contentGlint: false
+# Applies the enchantment glint on the background panes
+backgroundGlint: true
+# Maps the section names to the icons they should have when doing /shop
+# The names might needs to be escaped by quotation marks if they contain whitespace characters
+# This is also where the sections are defined.
 icons:
   "Ores and stones": STONE
   Farming: WOODEN_HOE
   "Mob drops": SPIDER_EYE
+# Maps the contents of each section
+# Use the names of the section as defined in the icons list
 contents:
   "Ores and stones":
     - STONE

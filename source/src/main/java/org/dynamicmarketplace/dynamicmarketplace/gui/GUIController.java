@@ -9,12 +9,15 @@ import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
 
 import net.md_5.bungee.api.ChatColor;
+import net.milkbowl.vault.economy.Economy;
 
 public class GUIController {
 
@@ -24,12 +27,21 @@ public class GUIController {
     public final Map<String, Material> SECTION_ICONS = new HashMap<>(8);
     public final ArrayList<ItemStack> SECTIONS = new ArrayList<>();
     public final ArrayList<String> SECTION_NAMES = new ArrayList<>();
+    public final boolean DO_CONTENT_GLINT;
 
     private static final ItemStack NO_SECTION = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
 
     public GUIController(YamlConfiguration sectionsConfig) {
         ConfigurationSection icons = sectionsConfig.getConfigurationSection("icons");
         ConfigurationSection contents = sectionsConfig.getConfigurationSection("contents");
+        DO_CONTENT_GLINT = sectionsConfig.getBoolean("contentGlint", true);
+        boolean sectionGlint = sectionsConfig.getBoolean("sectionGlint", true);
+        if (sectionsConfig.getBoolean("backgroundGlint", true)) {
+            ItemMeta itemMeta = NO_SECTION.getItemMeta();
+            itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            NO_SECTION.setItemMeta(itemMeta);
+        }
         for (String sectionName : icons.getKeys(false)) {
             Material mat = Material.matchMaterial(icons.getString(sectionName));
             if (mat != null) {
@@ -37,6 +49,10 @@ public class GUIController {
                 ItemStack item = new ItemStack(mat);
                 ItemMeta itemMeta = item.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.RESET + sectionName);
+                if (sectionGlint) {
+                    itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+                    itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
                 item.setItemMeta(itemMeta);
                 SECTIONS.add(item);
                 SECTION_NAMES.add(sectionName);
@@ -76,8 +92,9 @@ public class GUIController {
      * @param sectionNum the section number to generate
      * @param inventory The inventory to generate it in
      * @param processor The EconomyProcessor to obtain the prices of the items from
+     * @param the {@link Economy} to use, this is used for formatting the currency
      */
-    protected final void genSection(int sectionNum, Inventory inventory, EcoProcessor processor) {
+    protected final void genSection(int sectionNum, Inventory inventory, EcoProcessor processor, Economy eco) {
         inventory.clear();
         for (int i = 0; i < inventory.getSize(); i++) {
             inventory.setItem(i, NO_SECTION);
@@ -87,8 +104,12 @@ public class GUIController {
             ItemStack item = new ItemStack(toGenerate.get(i));
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.setLore(List.of(ChatColor.GREEN + "Buy price:", 
-                    ChatColor.DARK_GREEN.toString() + processor.getItemBuyPrice(toGenerate.get(i), 1) 
+                    ChatColor.DARK_GREEN.toString() + eco.format(processor.getItemBuyPrice(toGenerate.get(i), 1))
                     + ChatColor.GREEN + " per item"));
+            if (DO_CONTENT_GLINT) {
+                itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             item.setItemMeta(itemMeta);
             inventory.setItem(i, item);
         }

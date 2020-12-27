@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.InventoryView.Property;
 import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
 import org.dynamicmarketplace.dynamicmarketplace.Util;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
@@ -65,12 +64,21 @@ public class GUIEventListener implements Listener {
             if (e instanceof InventoryClickEvent &&
                     (e.getView().convertSlot(((InventoryClickEvent) e).getRawSlot()) == ((InventoryClickEvent) e).getRawSlot())) {
                 String section = guiControl.USERS_SECTIONMAP.remove(e.getWhoClicked().getUniqueId());
+                int rawSlot = ((InventoryClickEvent) e).getRawSlot();
                 if (section.equals("internal_main_section")) {
-                    int sectionNum = ((InventoryClickEvent) e).getRawSlot() % 9;
-                    guiControl.genSection(sectionNum, e.getView().getTopInventory(), economyProcessor);
-                    guiControl.USERS_SECTIONMAP.put(e.getWhoClicked().getUniqueId(), guiControl.SECTION_NAMES.get(sectionNum));
+                    rawSlot -= 9;
+                    if (rawSlot < 0 || rawSlot >= guiControl.SECTION_NAMES.size()) {
+                        guiControl.USERS_SECTIONMAP.put(e.getWhoClicked().getUniqueId(), section);
+                        return;
+                    }
+                    guiControl.genSection(rawSlot, e.getView().getTopInventory(), economyProcessor, economy);
+                    guiControl.USERS_SECTIONMAP.put(e.getWhoClicked().getUniqueId(), guiControl.SECTION_NAMES.get(rawSlot));
                 } else {
-                    Material m = guiControl.SECTION_CONTENTS.get(section).get(((InventoryClickEvent) e).getRawSlot());
+                    if (rawSlot >= guiControl.SECTION_CONTENTS.get(section).size()) {
+                        guiControl.USERS_SECTIONMAP.put(e.getWhoClicked().getUniqueId(), section);
+                        return;
+                    }
+                    Material m = guiControl.SECTION_CONTENTS.get(section).get(rawSlot);
                     e.getWhoClicked().closeInventory();
                     if (!costs.exists(m)) {
                         Bukkit.getLogger().severe("(DynamicMarket GUI)" + m.name() + " is for sale but does not have a price attached!");
