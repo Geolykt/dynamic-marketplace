@@ -72,7 +72,7 @@ public class EcoProcessor {
             if (stack == null || !canSell(stack.getType())) {
                 continue;
             }
-            map.put(stack.getType(), stack.getAmount());
+            map.put(stack.getType(), map.getOrDefault(stack.getType(), 0) + stack.getAmount());
             inv.clear(i);
         }
         return map;
