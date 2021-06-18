@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
+import org.jetbrains.annotations.NotNull;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -32,17 +33,20 @@ public final class Util {
      * @throws FileNotFoundException If the source is not found
      * @author eric-robertson
      */
-    public static ArrayList<String> getLines (File f) throws FileNotFoundException {
-        ArrayList<String> lines = new ArrayList<String> ();
+    public static @NotNull ArrayList<@NotNull String> getLines (@NotNull File f) throws FileNotFoundException {
+        ArrayList<@NotNull String> lines = new ArrayList<>();
         try (Scanner scanner = new Scanner(f)) {
             while (scanner.hasNextLine()) {
-                lines.add(scanner.nextLine().trim());
+                String line = scanner.nextLine().trim();
+                if (line != null) {
+                    lines.add(line);
+                }
             }
         }
         return lines;
     }
 
-    public static Material getItemInHand(Player p) {
+    public static @NotNull Material getItemInHand(@NotNull Player p) {
         return p.getInventory().getItemInMainHand().getType();
     }
 
@@ -54,7 +58,7 @@ public final class Util {
      * @param player The player that should receive the items
      * @return The amount of items that were given to the player.
      */
-    public static int getPlayerItems(Material item, int quantity, Player player) {
+    public static int getPlayerItems(@NotNull Material item, int quantity, @NotNull Player player) {
         if (quantity <= 0 || item.isAir()) {
             return 0;
         }
@@ -86,14 +90,18 @@ public final class Util {
      * @param player The player that is subject of the removal
      * @return The amount of items removed from the inventory of the player
      */
-    public static int removePlayerItems(Material item, int quantity, Player player) {
+    public static int removePlayerItems(@NotNull Material item, int quantity, @NotNull Player player) {
         PlayerInventory inv = player.getInventory();
         int first = inv.first(item);
         int removalTarget = quantity;
         while (first != -1 && quantity > 0) {
-            int amount = inv.getItem(first).getAmount();
+            ItemStack is = inv.getItem(first);
+            if (is == null) {
+                continue;
+            }
+            int amount = is.getAmount();
             if (quantity < amount) {
-                inv.getItem(first).setAmount(amount - quantity);
+                is.setAmount(amount - quantity);
                 return removalTarget;
             } else {
                 quantity -= amount;
@@ -118,8 +126,8 @@ public final class Util {
      * @return True if it succeeded, false otherwise
      * @since 1.0.0
      */
-    public static boolean purchaseItem (Material item, int quantity, Player player, EcoProcessor processor,
-            Economy economy, Costs costs) {
+    public static boolean purchaseItem (@NotNull Material item, int quantity, @NotNull Player player, @NotNull EcoProcessor processor,
+            @NotNull Economy economy, @NotNull Costs costs) {
         if (!processor.canSell(item)) {
             return true;
         }

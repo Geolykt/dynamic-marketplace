@@ -34,20 +34,37 @@ public class GUIController {
     public GUIController(YamlConfiguration sectionsConfig) {
         ConfigurationSection icons = sectionsConfig.getConfigurationSection("icons");
         ConfigurationSection contents = sectionsConfig.getConfigurationSection("contents");
+        if (icons == null || contents == null) {
+            throw new IllegalArgumentException("The configurations do not include what they should include.");
+        }
         DO_CONTENT_GLINT = sectionsConfig.getBoolean("contentGlint", true);
         boolean sectionGlint = sectionsConfig.getBoolean("sectionGlint", true);
         if (sectionsConfig.getBoolean("backgroundGlint", true)) {
             ItemMeta itemMeta = NO_SECTION.getItemMeta();
-            itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+            if (itemMeta == null) {
+                throw new NullPointerException();
+            }
+            final Enchantment arrow_DAMAGE2 = Enchantment.ARROW_DAMAGE;
+            if (arrow_DAMAGE2 != null) {
+                itemMeta.addEnchant(arrow_DAMAGE2, 1, true);
+            } else {
+                throw new NullPointerException();
+            }
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             NO_SECTION.setItemMeta(itemMeta);
         }
         for (String sectionName : icons.getKeys(false)) {
-            Material mat = Material.matchMaterial(icons.getString(sectionName));
+            assert sectionName != null;
+            String s = icons.getString(sectionName);
+            assert s != null;
+            Material mat = Material.matchMaterial(s);
             if (mat != null) {
                 SECTION_ICONS.put(sectionName, mat);
                 ItemStack item = new ItemStack(mat);
                 ItemMeta itemMeta = item.getItemMeta();
+                if (itemMeta == null) {
+                    throw new NullPointerException();
+                }
                 itemMeta.setDisplayName(ChatColor.RESET + sectionName);
                 if (sectionGlint) {
                     itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
@@ -58,6 +75,7 @@ public class GUIController {
                 SECTION_NAMES.add(sectionName);
                 ArrayList<Material> materialContents = new ArrayList<>();
                 for (String materialName : contents.getStringList(sectionName)) {
+                    assert materialName != null;
                     materialContents.add(Material.matchMaterial(materialName));
                 }
                 SECTION_CONTENTS.put(sectionName, materialContents);
@@ -103,6 +121,7 @@ public class GUIController {
         for (int i = 0; i < toGenerate.size(); i++) {
             ItemStack item = new ItemStack(toGenerate.get(i));
             ItemMeta itemMeta = item.getItemMeta();
+            assert itemMeta != null;
             itemMeta.setLore(List.of(ChatColor.GREEN + "Buy price:", 
                     ChatColor.DARK_GREEN.toString() + eco.format(processor.getItemBuyPrice(toGenerate.get(i), 1))
                     + ChatColor.GREEN + " per item"));

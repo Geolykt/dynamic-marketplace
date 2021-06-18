@@ -17,16 +17,17 @@ import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
 import org.dynamicmarketplace.dynamicmarketplace.gui.GUIController;
 import org.dynamicmarketplace.dynamicmarketplace.gui.GUIEventListener;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
+import org.jetbrains.annotations.NotNull;
 
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.Economy;
 
 public class Shop implements CommandExecutor, TabCompleter {
 
-    private final GUIController controller;
-    private final GUIEventListener listener;
+    private final @NotNull GUIController controller;
+    private final @NotNull GUIEventListener listener;
 
-    public Shop(DynamicMarketplace plugin, Costs costs, EcoProcessor ecoProcessor, Economy eco) {
+    public Shop(@NotNull DynamicMarketplace plugin, @NotNull Costs costs, @NotNull EcoProcessor ecoProcessor, @NotNull Economy eco) {
         File file = new File(plugin.getDataFolder(), "guiConfig.yml");
         if (!file.exists()) {
             plugin.saveResource("guiConfig.yml", false);
@@ -37,12 +38,12 @@ public class Shop implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         return new ArrayList<>(0);
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You must be a player in order to use this command!");
             return true;

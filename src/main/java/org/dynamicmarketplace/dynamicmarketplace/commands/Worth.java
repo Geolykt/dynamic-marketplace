@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
+import org.jetbrains.annotations.NotNull;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -25,14 +26,14 @@ public class Worth implements CommandExecutor, TabCompleter {
     private final Economy eco;
 
     // construct worth command object with a list of valid item names to tab complete with
-    public Worth(EcoProcessor process, Economy economy, Set<String> itemNames) {
+    public Worth(@NotNull EcoProcessor process, @NotNull Economy economy, Set<String> itemNames) {
         this.itemNames = itemNames;
         this.processor = process;
         this.eco = economy;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         Material material;
         int amount = -1;
         if(args.length == 0 || args[0].equalsIgnoreCase("hand")) {
@@ -65,8 +66,10 @@ public class Worth implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    @SuppressWarnings("null")
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias,
+            @NotNull String[] args) {
         if(args.length > 1) { // check that args[1] actually exists
             // copy the item names list, and only return the ones that start with the argument
             return new ArrayList<>(itemNames).stream().filter(s -> s.startsWith(args[1])).collect(Collectors.toList());

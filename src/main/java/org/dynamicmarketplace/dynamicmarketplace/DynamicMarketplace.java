@@ -1,7 +1,5 @@
 package org.dynamicmarketplace.dynamicmarketplace;
 
-import net.milkbowl.vault.economy.Economy;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,12 +9,19 @@ import java.util.Map.Entry;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynamicmarketplace.dynamicmarketplace.commands.Shop;
 import org.dynamicmarketplace.dynamicmarketplace.commands.Worth;
-import org.dynamicmarketplace.dynamicmarketplace.savedata.*;
+import org.dynamicmarketplace.dynamicmarketplace.savedata.Config;
+import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import de.geolykt.starloader.api.NullUtils;
+import net.milkbowl.vault.economy.Economy;
 
 public final class DynamicMarketplace extends JavaPlugin {
 
@@ -57,17 +62,31 @@ public final class DynamicMarketplace extends JavaPlugin {
         processor = new EcoProcessor(costs, (1/config.tax), config.tax); // TODO todo
 
         // setup worth command
-        Worth worthCmd = new Worth(processor, economy, costs.getItemNames());
-        Shop shopCMD = new Shop(this, costs, processor, economy);
+        Worth worthCmd = new Worth(getEconomyProcessor(), economy, costs.getItemNames());
+        Shop shopCMD = new Shop(this, costs, getEconomyProcessor(), economy);
 
-        getCommand("worth").setExecutor(worthCmd);
-        getCommand("worth").setTabCompleter(worthCmd);
-        getCommand("shop").setExecutor(shopCMD);
-        getCommand("shop").setTabCompleter(shopCMD);
+        PluginCommand worth = getCommand("worth");
+        if (worth != null) {
+            worth.setExecutor(worthCmd);
+            worth.setTabCompleter(worthCmd);
+        }
+        PluginCommand shop = getCommand("shop");
+        if (shop != null) {
+            shop.setExecutor(shopCMD);
+            shop.setTabCompleter(shopCMD);
+        }
+    }
+
+    @SuppressWarnings("null")
+    private @NotNull EcoProcessor getEconomyProcessor() {
+        if (processor == null) {
+            throw new IllegalStateException("Eco processor not yet defined!");
+        }
+        return processor;
     }
 
     private void setupEconomy () {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        @Nullable RegisteredServiceProvider<@NotNull Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         economy = (economyProvider == null) ? null : economyProvider.getProvider();
         if (economy == null) {
             getServer().getPluginManager().disablePlugin(this);
@@ -77,7 +96,7 @@ public final class DynamicMarketplace extends JavaPlugin {
 
     // Commands
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) return true;
 
         Player player = (Player) sender;
@@ -87,22 +106,49 @@ public final class DynamicMarketplace extends JavaPlugin {
             case "iteminfo":
                 if (args.length == 0)
                     return getInfoOnHand(player);
-                return getInfoOnItem(player, Material.getMaterial(args[0]));
+                Material material2 = Material.getMaterial(args[0]);
+                if (material2 == null) {
+                    sender.sendMessage("Argument 0 is not valid.");
+                    return true;
+                }
+                return getInfoOnItem(player, material2);
             case "cost":
                 if (args.length == 0)
                     return doCostings(player, player.getInventory().getItemInMainHand().getType(), 1);
-                if (args.length == 1)
-                    return doCostings(player, Material.getMaterial(args[0]), 1);
+                if (args.length == 1) {
+                    Material mat = Material.getMaterial(args[0]);
+                    if (mat == null) {
+                        sender.sendMessage("Argument 0 is not valid.");
+                        return true;
+                    }
+                    return doCostings(player, mat, 1);
+                }
                 count = inputParser.castInt(args[1], player);
-                return doCostings(player, Material.getMaterial(args[0]), count);
+                Material mat1 = Material.getMaterial(args[0]);
+                if (mat1 == null) {
+                    sender.sendMessage("Argument 0 is not valid.");
+                    return true;
+                }
+                return doCostings(player, mat1, count);
             // Purchasing Items
             case "buy":
                 if (args.length == 0)
                     return false;
-                if (args.length == 1)
-                    return Util.purchaseItem(Material.getMaterial(args[0]), 1, player, processor, economy, costs);
+                if (args.length == 1) {
+                    Material mat = Material.getMaterial(args[0]);
+                    if (mat == null) {
+                        sender.sendMessage("Argument 0 is not valid.");
+                        return true;
+                    }
+                    return Util.purchaseItem(mat, 1, player, getEconomyProcessor(), NullUtils.requireNotNull(economy), NullUtils.requireNotNull(costs));
+                }
                 count = inputParser.castInt(args[1], player);
-                return count < 1 ? true : Util.purchaseItem(Material.getMaterial(args[0]), count, player, processor, economy, costs);
+                Material material = Material.getMaterial(args[0]);
+                if (material == null) {
+                    sender.sendMessage("Argument 0 is not valid.");
+                    return true;
+                }
+                return count < 1 ? true : Util.purchaseItem(material, count, player, getEconomyProcessor(), NullUtils.requireNotNull(economy), NullUtils.requireNotNull(costs));
             case "sell":
                 if (args.length == 0 || args[0].equalsIgnoreCase("hand")) {
                     if (args.length < 1) {
@@ -112,11 +158,16 @@ public final class DynamicMarketplace extends JavaPlugin {
                         return count < 1 ? true : sellHand(count, player);
                     }
                 } else {
+                    Material mat = Material.getMaterial(args[0]);
+                    if (mat == null) {
+                        sender.sendMessage("Argument 0 is not valid.");
+                        return true;
+                    }
                     if (args.length == 1) {
-                        return sellItem(Material.getMaterial(args[0]), 1, player);
+                        return sellItem(mat, 1, player);
                     } else {
                         count = inputParser.castInt(args[1], player);
-                        return count < 1 ? true : sellItem(Material.getMaterial(args[0]), count, player);
+                        return count < 1 ? true : sellItem(mat, count, player);
                     }
                 }
             case "sellall":
@@ -125,12 +176,12 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    private boolean getInfoOnHand (Player player) {
+    private boolean getInfoOnHand (@NotNull Player player) {
         return getInfoOnItem(player, Util.getItemInHand(player));
     }
 
-    private boolean getInfoOnItem (Player player, Material item) {
-        if (item == null || !processor.canSell(item)) {
+    private boolean getInfoOnItem (@NotNull Player player, @NotNull Material item) {
+        if (!processor.canSell(item)) {
             return true;
         }
 //        Double quantity = processor.getShopQuantity(item);
@@ -142,7 +193,7 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    private boolean doCostings (Player player, Material item, int amount){
+    private boolean doCostings (@NotNull Player player, @NotNull Material item, int amount){
         if (!processor.canSell(item)) {
             return true;
         }
@@ -152,11 +203,11 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    private boolean sellHand (int quantity, Player player) {
+    private boolean sellHand (int quantity, @NotNull Player player) {
         return sellItem(Util.getItemInHand(player), quantity, player);
     }
 
-    private boolean sellItem (Material item, int quantity, Player player) {
+    private boolean sellItem (@NotNull Material item, int quantity, @NotNull Player player) {
         if (!processor.canSell(item)) {
             return true;
         }
@@ -181,7 +232,7 @@ public final class DynamicMarketplace extends JavaPlugin {
         return true;
     }
 
-    private boolean sellAll (Player player) {
+    private boolean sellAll (@NotNull Player player) {
         Map<Material,Integer> soldItems = processor.removeAllSellables(player);
         double total = 0;
         int totalCount = 0;

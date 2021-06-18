@@ -18,20 +18,22 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.dynamicmarketplace.dynamicmarketplace.EcoProcessor;
 import org.dynamicmarketplace.dynamicmarketplace.Util;
 import org.dynamicmarketplace.dynamicmarketplace.savedata.Costs;
+import org.jetbrains.annotations.NotNull;
 
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.Economy;
 
 public class GUIEventListener implements Listener {
 
-    private final GUIController guiControl;
-    private final Costs costs;
-    private final Economy economy;
-    private final EcoProcessor economyProcessor;
+    private final @NotNull GUIController guiControl;
+    private final @NotNull Costs costs;
+    private final @NotNull Economy economy;
+    private final @NotNull EcoProcessor economyProcessor;
 
-    private final HashMap<UUID, Material> BUY_OPTIONS = new HashMap<>();
+    private final @NotNull HashMap<@NotNull UUID, Material> BUY_OPTIONS = new HashMap<>();
 
-    public GUIEventListener(GUIController controller, Costs costProcessor, EcoProcessor ecoProcessor, Economy eco) {
+    public GUIEventListener(@NotNull GUIController controller, @NotNull Costs costProcessor,
+            @NotNull EcoProcessor ecoProcessor, @NotNull Economy eco) {
         guiControl = controller;
         costs = costProcessor;
         economy = eco;
